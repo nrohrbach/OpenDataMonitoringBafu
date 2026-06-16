@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OGD Monitoring BAFU</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <style>
+    :root {
+      --ob-color-primary:       #006F73;
+      --ob-color-primary-dark:  #005457;
+      --ob-color-primary-light: #E5F3F3;
+      --ob-color-accent:        #D4001A;
+      --ob-color-black:         #222222;
+      --ob-color-gray-dark:     #454545;
+      --ob-color-gray:          #767676;
+      --ob-color-gray-light:    #D5D5D5;
+      --ob-color-bg:            #F5F5F5;
+      --ob-color-white:         #FFFFFF;
+      --ob-font-family:         'Arial', 'Helvetica Neue', sans-serif;
+      --ob-space-xs:  4px;
+      --ob-space-sm:  8px;
+      --ob-space-md:  16px;
+      --ob-space-lg:  24px;
+      --ob-space-xl:  40px;
+      --ob-shadow:    0 2px 8px rgba(0,0,0,0.12);
+      --ob-radius:    4px;
+      --ob-border:    1px solid var(--ob-color-gray-light);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--ob-font-family);
+      background: var(--ob-color-bg);
+      color: var(--ob-color-black);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ─── HEADER ─────────────────────────────────────────────── */
+    header {
+      background: var(--ob-color-primary);
+      color: var(--ob-color-white);
+      padding: var(--ob-space-md) var(--ob-space-xl);
+      display: flex;
+      align-items: center;
+      gap: var(--ob-space-md);
+      box-shadow: var(--ob-shadow);
+    }
+    .header-logo {
+      width: 48px;
+      height: 48px;
+      background: var(--ob-color-white);
+      border-radius: var(--ob-radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .header-logo svg { width: 36px; height: 36px; }
+    header h1 { font-size: 1.35rem; font-weight: 700; letter-spacing: 0.01em; }
+    header p  { font-size: 0.82rem; opacity: 0.85; margin-top: 2px; }
+
+    /* ─── APP SHELL ───────────────────────────────────────────── */
+    .app-shell {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* ─── SIDEBAR ─────────────────────────────────────────────── */
+    nav.sidebar {
+      width: 220px;
+      flex-shrink: 0;
+      background: var(--ob-color-white);
+      border-right: var(--ob-border);
+      padding: var(--ob-space-lg) 0;
+    }
+    .nav-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ob-color-gray);
+      padding: var(--ob-space-sm) var(--ob-space-lg);
+      margin-bottom: var(--ob-space-xs);
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: var(--ob-space-sm);
+      padding: 10px var(--ob-space-lg);
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: var(--ob-color-gray-dark);
+      border-left: 3px solid transparent;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .nav-item:hover { background: var(--ob-color-primary-light); color: var(--ob-color-primary-dark); }
+    .nav-item.active {
+      background: var(--ob-color-primary-light);
+      border-left-color: var(--ob-color-primary);
+      color: var(--ob-color-primary-dark);
+      font-weight: 700;
+    }
+    .nav-item .icon { font-size: 1.1rem; width: 22px; text-align: center; }
+
+    /* ─── MAIN ────────────────────────────────────────────────── */
+    main {
+      flex: 1;
+      padding: var(--ob-space-xl);
+      overflow-y: auto;
+    }
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* ─── KPI GRID ────────────────────────────────────────────── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: var(--ob-space-md);
+      margin-bottom: var(--ob-space-xl);
+    }
+    .kpi-card {
+      background: var(--ob-color-white);
+      border: var(--ob-border);
+      border-radius: var(--ob-radius);
+      padding: var(--ob-space-lg);
+      box-shadow: var(--ob-shadow);
+    }
+    .kpi-card .kpi-label {
+      font-size: 0.78rem;
+      color: var(--ob-color-gray);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: var(--ob-space-sm);
+    }
+    .kpi-card .kpi-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--ob-color-primary);
+      line-height: 1;
+    }
+    .kpi-card .kpi-delta {
+      font-size: 0.8rem;
+      color: var(--ob-color-gray);
+      margin-top: var(--ob-space-xs);
+    }
+    .kpi-card .kpi-delta.positive { color: var(--ob-color-primary); }
+    .kpi-card .kpi-delta.negative { color: var(--ob-color-accent); }
+
+    /* ─── CHART CARDS ─────────────────────────────────────────── */
+    .chart-card {
+      background: var(--ob-color-white);
+      border: var(--ob-border);
+      border-radius: var(--ob-radius);
+      box-shadow: var(--ob-shadow);
+      padding: var(--ob-space-lg);
+      margin-bottom: var(--ob-space-lg);
+    }
+    .chart-card h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--ob-color-primary-dark);
+      margin-bottom: var(--ob-space-md);
+      padding-bottom: var(--ob-space-sm);
+      border-bottom: var(--ob-border);
+    }
+    .chart-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--ob-space-lg);
+      margin-bottom: var(--ob-space-lg);
+    }
+    @media (max-width: 900px) { .chart-row { grid-template-columns: 1fr; } }
+
+    /* ─── PAGE TITLE ──────────────────────────────────────────── */
+    .page-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--ob-color-primary-dark);
+      margin-bottom: var(--ob-space-lg);
+    }
+    .page-subtitle {
+      font-size: 0.88rem;
+      color: var(--ob-color-gray);
+      margin-top: -12px;
+      margin-bottom: var(--ob-space-lg);
+    }
+
+    /* ─── LOADING ─────────────────────────────────────────────── */
+    #loading {
+      position: fixed; inset: 0;
+      background: rgba(255,255,255,0.9);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: var(--ob-space-md);
+      z-index: 100;
+    }
+    .spinner {
+      width: 42px; height: 42px;
+      border: 4px solid var(--ob-color-gray-light);
+      border-top-color: var(--ob-color-primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #loading p { color: var(--ob-color-gray-dark); font-size: 0.95rem; }
+
+    /* ─── STAC PROGRESS BAR ───────────────────────────────────── */
+    .progress-bar-wrap {
+      background: var(--ob-color-gray-light);
+      border-radius: 999px;
+      height: 14px;
+      overflow: hidden;
+      margin: var(--ob-space-sm) 0;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--ob-color-primary);
+      border-radius: 999px;
+      transition: width 0.5s ease;
+    }
+
+    /* ─── TABLE ───────────────────────────────────────────────── */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    .data-table th {
+      background: var(--ob-color-primary-light);
+      color: var(--ob-color-primary-dark);
+      font-weight: 700;
+      padding: var(--ob-space-sm) var(--ob-space-md);
+      text-align: left;
+      border-bottom: 2px solid var(--ob-color-primary);
+    }
+    .data-table td {
+      padding: var(--ob-space-sm) var(--ob-space-md);
+      border-bottom: var(--ob-border);
+    }
+    .data-table tr:hover td { background: var(--ob-color-primary-light); }
+
+    /* ─── BADGE ───────────────────────────────────────────────── */
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: var(--ob-color-primary-light);
+      color: var(--ob-color-primary-dark);
+    }
+  </style>
+</head>
+<body>
+
+<!-- Loading overlay -->
+<div id="loading">
+  <div class="spinner"></div>
+  <p>Daten werden geladen…</p>
+</div>
+
+<!-- Header -->
+<header>
+  <div class="header-logo">
+    <!-- Swiss cross SVG -->
+    <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="36" height="36" fill="#D4001A"/>
+      <rect x="14" y="6" width="8" height="24" fill="white"/>
+      <rect x="6" y="14" width="24" height="8" fill="white"/>
+    </svg>
+  </div>
+  <div>
+    <h1>OGD Monitoring BAFU</h1>
+    <p>Bundesamt für Umwelt — Open Government Data Übersicht</p>
+  </div>
+</header>
+
+<div class="app-shell">
+
+  <!-- Sidebar Navigation -->
+  <nav class="sidebar">
+    <div class="nav-label">Ansichten</div>
+    <div class="nav-item active" data-page="dashboard">
+      <span class="icon">📊</span> Dashboard
+    </div>
+    <div class="nav-item" data-page="abteilung">
+      <span class="icon">🏢</span> Abteilung
+    </div>
+    <div class="nav-item" data-page="formate">
+      <span class="icon">📁</span> Formate
+    </div>
+    <div class="nav-item" data-page="stac">
+      <span class="icon">🛰️</span> STAC
+    </div>
+    <div class="nav-item" data-page="lizenzen">
+      <span class="icon">📜</span> Lizenzen &amp; Aktualität
+    </div>
+    <div class="nav-item" data-page="themen">
+      <span class="icon">🌿</span> Themen
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <main>
+
+    <!-- ── DASHBOARD ────────────────────────────────────────── -->
+    <div id="page-dashboard" class="page active">
+      <div class="page-title">Dashboard</div>
+      <div class="page-subtitle">Aktueller Stand und Gesamtentwicklung der BAFU Open-Data-Publikationen</div>
+
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">Packages (aktuell)</div>
+          <div class="kpi-value" id="kpi-packages">–</div>
+          <div class="kpi-delta" id="kpi-packages-delta"></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Ressourcen (aktuell)</div>
+          <div class="kpi-value" id="kpi-resources">–</div>
+          <div class="kpi-delta" id="kpi-resources-delta"></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">STAC-Ressourcen</div>
+          <div class="kpi-value" id="kpi-stac">–</div>
+          <div class="kpi-delta" id="kpi-stac-pct"></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Abteilungen</div>
+          <div class="kpi-value" id="kpi-abteilungen">–</div>
+          <div class="kpi-delta">mit Publikationen</div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <h2>Packages über Zeit</h2>
+        <div id="chart-dashboard-trend"></div>
+      </div>
+
+      <div class="chart-row">
+        <div class="chart-card">
+          <h2>Ressourcen über Zeit</h2>
+          <div id="chart-dashboard-resources"></div>
+        </div>
+        <div class="chart-card">
+          <h2>STAC-Anteil über Zeit</h2>
+          <div id="chart-dashboard-stac-trend"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ABTEILUNG ─────────────────────────────────────────── -->
+    <div id="page-abteilung" class="page">
+      <div class="page-title">Packages nach Abteilung</div>
+      <div class="page-subtitle">Anzahl Packages pro Abteilung (Maintainer) — aktueller Stand und Entwicklung</div>
+      <div class="chart-row">
+        <div class="chart-card">
+          <h2>Packages pro Abteilung (aktuell)</h2>
+          <div id="chart-abt-bar"></div>
+        </div>
+        <div class="chart-card">
+          <h2>Top-5 Abteilungen über Zeit</h2>
+          <div id="chart-abt-line"></div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h2>Tabelle: Abteilungen</h2>
+        <table class="data-table" id="table-abt"></table>
+      </div>
+    </div>
+
+    <!-- ── FORMATE ───────────────────────────────────────────── -->
+    <div id="page-formate" class="page">
+      <div class="page-title">Ressourcen-Formate</div>
+      <div class="page-subtitle">Verteilung der Datenformate (WMS, CSV, GeoJSON, …) — aktuell und historisch</div>
+      <div class="chart-row">
+        <div class="chart-card">
+          <h2>Formate (aktuell)</h2>
+          <div id="chart-fmt-bar"></div>
+        </div>
+        <div class="chart-card">
+          <h2>Top-6 Formate über Zeit</h2>
+          <div id="chart-fmt-line"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STAC ──────────────────────────────────────────────── -->
+    <div id="page-stac" class="page">
+      <div class="page-title">STAC-Geodaten</div>
+      <div class="page-subtitle">Ressourcen mit STAC-Browser-Link (data.geo.admin.ch/browser)</div>
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">Ressourcen mit STAC</div>
+          <div class="kpi-value" id="kpi-stac2">–</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Ressourcen ohne STAC</div>
+          <div class="kpi-value" id="kpi-no-stac">–</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">STAC-Anteil</div>
+          <div class="kpi-value" id="kpi-stac-pct2">–</div>
+        </div>
+      </div>
+      <div style="margin-bottom: var(--ob-space-lg);">
+        <div style="font-size:0.85rem;color:var(--ob-color-gray-dark);margin-bottom:4px;" id="stac-progress-label"></div>
+        <div class="progress-bar-wrap"><div class="progress-bar-fill" id="stac-progress-bar" style="width:0%"></div></div>
+      </div>
+      <div class="chart-row">
+        <div class="chart-card">
+          <h2>STAC vs. Kein STAC (aktuell)</h2>
+          <div id="chart-stac-pie"></div>
+        </div>
+        <div class="chart-card">
+          <h2>STAC-Ressourcen über Zeit</h2>
+          <div id="chart-stac-line"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── LIZENZEN & AKTUALITÄT ─────────────────────────────── -->
+    <div id="page-lizenzen" class="page">
+      <div class="page-title">Lizenzen &amp; Aktualität</div>
+      <div class="page-subtitle">Lizenzverteilung und Aktualität der Packages (letztes Änderungsdatum)</div>
+      <div class="chart-row">
+        <div class="chart-card">
+          <h2>Lizenzverteilung (aktuell)</h2>
+          <div id="chart-lic-pie"></div>
+        </div>
+        <div class="chart-card">
+          <h2>Packages nach Jahr der letzten Änderung</h2>
+          <div id="chart-modified-bar"></div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h2>Lizenzen über Zeit</h2>
+        <div id="chart-lic-line"></div>
+      </div>
+    </div>
+
+    <!-- ── THEMEN ─────────────────────────────────────────────── -->
+    <div id="page-themen" class="page">
+      <div class="page-title">Themen</div>
+      <div class="page-subtitle">Keywords der Packages, gematcht gegen BAFU-Themenbereiche</div>
+      <div class="chart-row">
+        <div class="chart-card">
+          <h2>Packages pro Thema (aktuell)</h2>
+          <div id="chart-themen-bar"></div>
+        </div>
+        <div class="chart-card">
+          <h2>Themen über Zeit (Top 6)</h2>
+          <div id="chart-themen-line"></div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h2>Keyword-Häufigkeit (Top 30)</h2>
+        <div id="chart-keywords"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────────────────────
+// CONSTANTS
+// ─────────────────────────────────────────────────────────────────────────────
+const COLORS = [
+  '#006F73','#D4001A','#005457','#F5A623','#4A90D9',
+  '#7B4F9E','#2ECC71','#E67E22','#1ABC9C','#E74C3C',
+  '#3498DB','#9B59B6','#F39C12','#16A085','#C0392B'
+];
+
+const PLOT_LAYOUT_BASE = {
+  paper_bgcolor: 'rgba(0,0,0,0)',
+  plot_bgcolor:  'rgba(0,0,0,0)',
+  font: { family: 'Arial, Helvetica Neue, sans-serif', color: '#454545', size: 12 },
+  margin: { t: 10, r: 10, b: 60, l: 10 },
+  colorway: COLORS,
+  legend: { bgcolor: 'rgba(0,0,0,0)' }
+};
+
+const BAFU_THEMEN = {
+  'Wald':       ['wald','forst','tree','bäume','waldbrand'],
+  'Wasser':     ['wasser','fluss','see','grundwasser','gewässer','hydrologie'],
+  'Luft':       ['luft','luftqualität','emission','klima','co2','treibhausgas'],
+  'Biodiversität': ['biodiversität','arten','fauna','flora','schutzgebiet','lebensraum'],
+  'Boden':      ['boden','erosion','altlasten','deponie'],
+  'Lärm':       ['lärm','schall','akustik'],
+  'Strahlung':  ['strahlung','uv','elektrosmog'],
+  'Chemikalien':['chemikalien','pestizid','schadstoffe'],
+  'Abfall':     ['abfall','recycling','entsorgung'],
+  'Energie':    ['energie','strom','solar','wind','wasserkraft'],
+  'Landschaft': ['landschaft','raumplanung','siedlung','natur'],
+  'Georeferenz':['geodaten','gis','karte','wms','wmts','shapefile']
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DATA LOADING
+// ─────────────────────────────────────────────────────────────────────────────
+let packages = [], resources = [];
+
+function parseCsv(url) {
+  return new Promise((resolve, reject) => {
+    Papa.parse(url, {
+      download: true, header: true, skipEmptyLines: true,
+      complete: r => resolve(r.data),
+      error:    e => reject(e)
+    });
+  });
+}
+
+Promise.all([
+  parseCsv('ogd_packages_history.csv'),
+  parseCsv('ogd_resources_history.csv')
+]).then(([pkg, res]) => {
+  packages  = pkg;
+  resources = res;
+  document.getElementById('loading').style.display = 'none';
+  renderPage('dashboard');
+}).catch(err => {
+  document.getElementById('loading').innerHTML =
+    `<p style="color:#D4001A">Fehler beim Laden der Daten:<br>${err}</p>`;
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// NAVIGATION
+// ─────────────────────────────────────────────────────────────────────────────
+document.querySelectorAll('.nav-item').forEach(el => {
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    el.classList.add('active');
+    renderPage(el.dataset.page);
+  });
+});
+
+const rendered = new Set();
+
+function renderPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(`page-${page}`).classList.add('active');
+  if (!rendered.has(page)) {
+    rendered.add(page);
+    switch (page) {
+      case 'dashboard':  renderDashboard(); break;
+      case 'abteilung':  renderAbteilung(); break;
+      case 'formate':    renderFormate();   break;
+      case 'stac':       renderStac();      break;
+      case 'lizenzen':   renderLizenzen();  break;
+      case 'themen':     renderThemen();    break;
+    }
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────────────────────────────────────
+function latestDate(data) {
+  const dates = [...new Set(data.map(r => r.snapshot_date))].sort();
+  return dates[dates.length - 1];
+}
+
+function prevDate(data) {
+  const dates = [...new Set(data.map(r => r.snapshot_date))].sort();
+  return dates.length > 1 ? dates[dates.length - 2] : null;
+}
+
+function byDate(data, date) {
+  return data.filter(r => r.snapshot_date === date);
+}
+
+function countByDate(data, field) {
+  const dates = [...new Set(data.map(r => r.snapshot_date))].sort();
+  return dates.map(d => ({
+    date: d,
+    count: byDate(data, d).length
+  }));
+}
+
+function groupCount(arr, field) {
+  const m = {};
+  arr.forEach(r => { const v = r[field] || '(leer)'; m[v] = (m[v] || 0) + 1; });
+  return Object.entries(m).sort((a,b) => b[1]-a[1]);
+}
+
+function plotDefaults(extra = {}) {
+  return Object.assign({}, PLOT_LAYOUT_BASE, extra);
+}
+
+function lineTrace(x, y, name, color, width=2) {
+  return { x, y, name, type: 'scatter', mode: 'lines+markers',
+           line: { color, width }, marker: { size: 4, color } };
+}
+
+function barTrace(x, y, name, color) {
+  return { x, y, name, type: 'bar', marker: { color } };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DASHBOARD
+// ─────────────────────────────────────────────────────────────────────────────
+function renderDashboard() {
+  const latestD  = latestDate(packages);
+  const prevD    = prevDate(packages);
+  const latest   = byDate(packages, latestD);
+  const prev     = prevD ? byDate(packages, prevD) : [];
+  const latestR  = byDate(resources, latestDate(resources));
+  const prevR    = prevD ? byDate(resources, prevD) : [];
+
+  // KPIs
+  setText('kpi-packages', latest.length);
+  setText('kpi-resources', latestR.length);
+  const stacCount = latestR.filter(r => r.has_stac === 'true').length;
+  setText('kpi-stac', stacCount);
+  setText('kpi-stac-pct', latestR.length ? `${((stacCount/latestR.length)*100).toFixed(1)} %` : '–');
+  const abt = new Set(latest.map(r => r.maintainer_email).filter(Boolean));
+  setText('kpi-abteilungen', abt.size);
+
+  if (prev.length) {
+    setDelta('kpi-packages-delta', latest.length - prev.length, 'vs. Vortag');
+    setDelta('kpi-resources-delta', latestR.length - prevR.length, 'vs. Vortag');
+  }
+
+  // Trend Packages
+  const pkgSeries = countByDate(packages, 'snapshot_date');
+  Plotly.newPlot('chart-dashboard-trend', [
+    lineTrace(pkgSeries.map(d=>d.date), pkgSeries.map(d=>d.count), 'Packages', COLORS[0], 2.5)
+  ], plotDefaults({ yaxis: { rangemode: 'tozero' } }), { responsive: true, displayModeBar: false });
+
+  // Trend Ressourcen
+  const resSeries = countByDate(resources, 'snapshot_date');
+  Plotly.newPlot('chart-dashboard-resources', [
+    lineTrace(resSeries.map(d=>d.date), resSeries.map(d=>d.count), 'Ressourcen', COLORS[1], 2.5)
+  ], plotDefaults({ yaxis: { rangemode: 'tozero' } }), { responsive: true, displayModeBar: false });
+
+  // STAC Trend
+  const allDates = [...new Set(resources.map(r=>r.snapshot_date))].sort();
+  const stacSeries = allDates.map(d => byDate(resources,d).filter(r=>r.has_stac==='true').length);
+  Plotly.newPlot('chart-dashboard-stac-trend', [
+    lineTrace(allDates, stacSeries, 'STAC', COLORS[0])
+  ], plotDefaults({ yaxis: { rangemode: 'tozero' } }), { responsive: true, displayModeBar: false });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ABTEILUNG
+// ─────────────────────────────────────────────────────────────────────────────
+function renderAbteilung() {
+  const latestD = latestDate(packages);
+  const latest  = byDate(packages, latestD);
+  const grouped = groupCount(latest, 'maintainer_email');
+
+  // Shorten labels
+  const label  = g => (g[0] || '').replace('@bafu.admin.ch','').replace('@','') || '(leer)';
+
+  // Bar chart
+  Plotly.newPlot('chart-abt-bar', [
+    barTrace(grouped.map(label), grouped.map(g=>g[1]), 'Packages', COLORS[0])
+  ], plotDefaults({ margin: { t:10,r:10,b:120,l:40 }, xaxis: { tickangle: -40 } }),
+  { responsive: true, displayModeBar: false });
+
+  // Top-5 line over time
+  const top5 = grouped.slice(0, 5).map(g => g[0]);
+  const dates = [...new Set(packages.map(r=>r.snapshot_date))].sort();
+  const traces = top5.map((abt, i) => ({
+    x: dates,
+    y: dates.map(d => byDate(packages, d).filter(r=>r.maintainer_email===abt).length),
+    name: label([abt]),
+    type: 'scatter', mode: 'lines+markers',
+    line: { color: COLORS[i], width: 2 },
+    marker: { size: 4 }
+  }));
+  Plotly.newPlot('chart-abt-line', traces,
+    plotDefaults({ legend: { orientation: 'h', y: -0.3 } }),
+    { responsive: true, displayModeBar: false });
+
+  // Table
+  const tbl = document.getElementById('table-abt');
+  tbl.innerHTML = `<tr><th>Abteilung</th><th>E-Mail</th><th>Packages</th></tr>` +
+    grouped.map(g => {
+      const pkgs = latest.filter(r=>r.maintainer_email===g[0]);
+      const abt  = pkgs[0]?.maintainer || g[0];
+      return `<tr><td>${abt}</td><td>${g[0]}</td><td><span class="badge">${g[1]}</span></td></tr>`;
+    }).join('');
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FORMATE
+// ─────────────────────────────────────────────────────────────────────────────
+function renderFormate() {
+  const latestD = latestDate(resources);
+  const latest  = byDate(resources, latestD);
+  const grouped = groupCount(latest, 'format').slice(0, 20);
+
+  Plotly.newPlot('chart-fmt-bar', [
+    barTrace(grouped.map(g=>g[0]||'(leer)'), grouped.map(g=>g[1]), 'Ressourcen', COLORS[0])
+  ], plotDefaults({ margin: { t:10,r:10,b:120,l:40 }, xaxis: { tickangle: -40 } }),
+  { responsive: true, displayModeBar: false });
+
+  // Top-6 line
+  const top6  = grouped.slice(0, 6).map(g => g[0]);
+  const dates = [...new Set(resources.map(r=>r.snapshot_date))].sort();
+  const traces = top6.map((fmt, i) => lineTrace(
+    dates,
+    dates.map(d => byDate(resources, d).filter(r=>r.format===fmt).length),
+    fmt || '(leer)', COLORS[i]
+  ));
+  Plotly.newPlot('chart-fmt-line', traces,
+    plotDefaults({ legend: { orientation: 'h', y: -0.3 } }),
+    { responsive: true, displayModeBar: false });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// STAC
+// ─────────────────────────────────────────────────────────────────────────────
+function renderStac() {
+  const latestD = latestDate(resources);
+  const latest  = byDate(resources, latestD);
+  const stac    = latest.filter(r => r.has_stac === 'true').length;
+  const noStac  = latest.length - stac;
+  const pct     = latest.length ? ((stac / latest.length) * 100).toFixed(1) : 0;
+
+  setText('kpi-stac2', stac);
+  setText('kpi-no-stac', noStac);
+  setText('kpi-stac-pct2', `${pct} %`);
+  setText('stac-progress-label', `${stac} von ${latest.length} Ressourcen haben einen STAC-Link (${pct} %)`);
+  document.getElementById('stac-progress-bar').style.width = `${pct}%`;
+
+  // Pie
+  Plotly.newPlot('chart-stac-pie', [{
+    values: [stac, noStac],
+    labels: ['Mit STAC', 'Ohne STAC'],
+    type: 'pie',
+    marker: { colors: [COLORS[0], COLORS[6]] },
+    hole: 0.4,
+    textinfo: 'label+percent'
+  }], plotDefaults({ margin: { t:10, r:10, b:10, l:10 } }),
+  { responsive: true, displayModeBar: false });
+
+  // Line over time
+  const dates     = [...new Set(resources.map(r=>r.snapshot_date))].sort();
+  const stacVals  = dates.map(d => byDate(resources,d).filter(r=>r.has_stac==='true').length);
+  const noStacVals= dates.map(d => byDate(resources,d).filter(r=>r.has_stac!=='true').length);
+  Plotly.newPlot('chart-stac-line', [
+    lineTrace(dates, stacVals,   'Mit STAC',  COLORS[0]),
+    lineTrace(dates, noStacVals, 'Ohne STAC', COLORS[6])
+  ], plotDefaults({ legend: { orientation: 'h', y: -0.25 } }),
+  { responsive: true, displayModeBar: false });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LIZENZEN & AKTUALITÄT
+// ─────────────────────────────────────────────────────────────────────────────
+function renderLizenzen() {
+  const latestD = latestDate(packages);
+  const latest  = byDate(packages, latestD);
+
+  // Lizenz-Pie
+  const licGroups = groupCount(latest, 'license').slice(0, 8);
+  Plotly.newPlot('chart-lic-pie', [{
+    values: licGroups.map(g=>g[1]),
+    labels: licGroups.map(g=>g[0]||'(leer)'),
+    type: 'pie',
+    marker: { colors: COLORS },
+    hole: 0.35,
+    textinfo: 'label+percent'
+  }], plotDefaults({ margin: { t:10,r:10,b:10,l:10 } }),
+  { responsive: true, displayModeBar: false });
+
+  // Modified bar (by year)
+  const years = {};
+  latest.forEach(r => {
+    const y = (r.modified || '').substring(0, 4);
+    if (y) years[y] = (years[y] || 0) + 1;
+  });
+  const ySorted = Object.entries(years).sort((a,b)=>a[0].localeCompare(b[0]));
+  Plotly.newPlot('chart-modified-bar', [
+    barTrace(ySorted.map(y=>y[0]), ySorted.map(y=>y[1]), 'Packages', COLORS[0])
+  ], plotDefaults({ xaxis: { type: 'category' } }),
+  { responsive: true, displayModeBar: false });
+
+  // Lizenzen über Zeit (top 5)
+  const top5lic = licGroups.slice(0, 5).map(g => g[0]);
+  const dates   = [...new Set(packages.map(r=>r.snapshot_date))].sort();
+  const traces  = top5lic.map((lic, i) => lineTrace(
+    dates,
+    dates.map(d => byDate(packages,d).filter(r=>r.license===lic).length),
+    lic || '(leer)', COLORS[i]
+  ));
+  Plotly.newPlot('chart-lic-line', traces,
+    plotDefaults({ legend: { orientation: 'h', y: -0.3 } }),
+    { responsive: true, displayModeBar: false });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// THEMEN
+// ─────────────────────────────────────────────────────────────────────────────
+function renderThemen() {
+  const latestD = latestDate(packages);
+  const latest  = byDate(packages, latestD);
+
+  // Match packages to themes
+  function getThemen(pkg) {
+    const kw = (pkg.keywords_de || '').toLowerCase();
+    return Object.entries(BAFU_THEMEN)
+      .filter(([, words]) => words.some(w => kw.includes(w)))
+      .map(([theme]) => theme);
+  }
+
+  // Themen bar (aktuell)
+  const themenCount = {};
+  latest.forEach(pkg => {
+    getThemen(pkg).forEach(t => { themenCount[t] = (themenCount[t] || 0) + 1; });
+  });
+  const themenSorted = Object.entries(themenCount).sort((a,b)=>b[1]-a[1]);
+  Plotly.newPlot('chart-themen-bar', [
+    barTrace(themenSorted.map(t=>t[0]), themenSorted.map(t=>t[1]), 'Packages', COLORS[0])
+  ], plotDefaults({ margin: { t:10,r:10,b:100,l:40 }, xaxis: { tickangle: -35 } }),
+  { responsive: true, displayModeBar: false });
+
+  // Themen über Zeit (top 6)
+  const top6themes = themenSorted.slice(0, 6).map(t => t[0]);
+  const dates      = [...new Set(packages.map(r=>r.snapshot_date))].sort();
+  const traces     = top6themes.map((theme, i) => lineTrace(
+    dates,
+    dates.map(d => {
+      const cnt = {};
+      byDate(packages,d).forEach(pkg => getThemen(pkg).forEach(t => { cnt[t]=(cnt[t]||0)+1; }));
+      return cnt[theme] || 0;
+    }),
+    theme, COLORS[i]
+  ));
+  Plotly.newPlot('chart-themen-line', traces,
+    plotDefaults({ legend: { orientation: 'h', y: -0.3 } }),
+    { responsive: true, displayModeBar: false });
+
+  // Top-30 keywords
+  const kwCount = {};
+  latest.forEach(pkg => {
+    (pkg.keywords_de || '').split(',').map(k=>k.trim().toLowerCase()).filter(Boolean)
+      .forEach(k => { kwCount[k] = (kwCount[k]||0)+1; });
+  });
+  const kwSorted = Object.entries(kwCount).sort((a,b)=>b[1]-a[1]).slice(0, 30);
+  Plotly.newPlot('chart-keywords', [{
+    x: kwSorted.map(k=>k[1]),
+    y: kwSorted.map(k=>k[0]),
+    type: 'bar',
+    orientation: 'h',
+    marker: { color: COLORS[0] }
+  }], plotDefaults({ margin: { t:10,r:30,b:40,l:160 }, yaxis: { autorange: 'reversed' } }),
+  { responsive: true, displayModeBar: false });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// UTILITY
+// ─────────────────────────────────────────────────────────────────────────────
+function setText(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
+function setDelta(id, diff, label) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const sign = diff > 0 ? '+' : '';
+  el.textContent = `${sign}${diff} ${label}`;
+  el.className = 'kpi-delta ' + (diff > 0 ? 'positive' : diff < 0 ? 'negative' : '');
+}
+</script>
+</body>
+</html>
