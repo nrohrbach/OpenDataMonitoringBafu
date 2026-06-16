@@ -39,9 +39,15 @@ jobs:
       - name: Git-History rekonstruieren
         run: python extract_git_history.py
 
+      - name: Deploy-Verzeichnis vorbereiten
+        run: |
+          mkdir -p _deploy
+          cp index.html _deploy/
+          cp ogd_packages_history.csv _deploy/
+          cp ogd_resources_history.csv _deploy/
+
       - name: GitHub Pages deployen
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .
-          exclude_assets: '.github,fetch_data.py,extract_git_history.py,requirements.txt,ogd_packages.csv,ogd_resources.csv'
+          publish_dir: _deploy
