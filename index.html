@@ -244,6 +244,12 @@
       border-bottom: var(--ob-border);
     }
     .data-table tr:hover td { background: var(--ob-color-primary-light); }
+    .abt-row { cursor: pointer; }
+    .abt-toggle { width: 24px; color: var(--ob-color-primary); font-size: 0.8rem; }
+    .abt-detail td { background: var(--ob-color-bg); padding: var(--ob-space-md); }
+    .data-table-nested { font-size: 0.8rem; box-shadow: none; }
+    .data-table-nested th { background: var(--ob-color-white); }
+    .data-table-nested tr:hover td { background: var(--ob-color-white); }
 
     /* ─── BADGE ───────────────────────────────────────────────── */
     .badge {
@@ -678,14 +684,42 @@ function renderAbteilung() {
     plotDefaults({ legend: { orientation: 'h', y: -0.3 } }),
     { responsive: true, displayModeBar: false });
 
-  // Table
+  // Table (Zeilen aufklappbar → zeigt Packages der Abteilung)
   const tbl = document.getElementById('table-abt');
-  tbl.innerHTML = `<tr><th>Abteilung</th><th>E-Mail</th><th>Packages</th></tr>` +
-    grouped.map(g => {
+  tbl.innerHTML = `<tr><th></th><th>Abteilung</th><th>E-Mail</th><th>Packages</th></tr>` +
+    grouped.map((g, i) => {
       const pkgs  = latest.filter(r=>r.maintainer===g[0]);
       const email = pkgs[0]?.maintainer_email || '';
-      return `<tr><td>${g[0]}</td><td>${email}</td><td><span class="badge">${g[1]}</span></td></tr>`;
+      const rowsHtml = pkgs
+        .sort((a,b) => (a.title_de||'').localeCompare(b.title_de||''))
+        .map(p => `<tr><td>${p.title_de || p.package_name}</td><td>${p.package_name}</td><td>${p.modified || ''}</td></tr>`)
+        .join('');
+      return `
+        <tr class="abt-row" data-target="abt-detail-${i}">
+          <td class="abt-toggle">▸</td>
+          <td>${g[0]}</td>
+          <td>${email}</td>
+          <td><span class="badge">${g[1]}</span></td>
+        </tr>
+        <tr id="abt-detail-${i}" class="abt-detail" style="display:none;">
+          <td></td>
+          <td colspan="3">
+            <table class="data-table data-table-nested">
+              <tr><th>Titel</th><th>package_name</th><th>Geändert</th></tr>
+              ${rowsHtml}
+            </table>
+          </td>
+        </tr>`;
     }).join('');
+
+  tbl.querySelectorAll('.abt-row').forEach(row => {
+    row.addEventListener('click', () => {
+      const detail = document.getElementById(row.dataset.target);
+      const open = detail.style.display !== 'none';
+      detail.style.display = open ? 'none' : 'table-row';
+      row.querySelector('.abt-toggle').textContent = open ? '▸' : '▾';
+    });
+  });
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
