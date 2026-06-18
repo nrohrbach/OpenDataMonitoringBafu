@@ -653,10 +653,9 @@ function renderDashboard() {
 function renderAbteilung() {
   const latestD = latestDate(packages);
   const latest  = byDate(packages, latestD);
-  const grouped = groupCount(latest, 'maintainer_email');
+  const grouped = groupCount(latest, 'maintainer');
 
-  // Shorten labels
-  const label  = g => (g[0] || '').replace('@bafu.admin.ch','').replace('@','') || '(leer)';
+  const label = g => g[0] || '(leer)';
 
   // Bar chart
   Plotly.newPlot('chart-abt-bar', [
@@ -669,7 +668,7 @@ function renderAbteilung() {
   const dates = [...new Set(packages.map(r=>r.snapshot_date))].sort();
   const traces = top5.map((abt, i) => ({
     x: dates,
-    y: dates.map(d => byDate(packages, d).filter(r=>r.maintainer_email===abt).length),
+    y: dates.map(d => byDate(packages, d).filter(r=>r.maintainer===abt).length),
     name: label([abt]),
     type: 'scatter', mode: 'lines+markers',
     line: { color: COLORS[i], width: 2 },
@@ -683,9 +682,9 @@ function renderAbteilung() {
   const tbl = document.getElementById('table-abt');
   tbl.innerHTML = `<tr><th>Abteilung</th><th>E-Mail</th><th>Packages</th></tr>` +
     grouped.map(g => {
-      const pkgs = latest.filter(r=>r.maintainer_email===g[0]);
-      const abt  = pkgs[0]?.maintainer || g[0];
-      return `<tr><td>${abt}</td><td>${g[0]}</td><td><span class="badge">${g[1]}</span></td></tr>`;
+      const pkgs  = latest.filter(r=>r.maintainer===g[0]);
+      const email = pkgs[0]?.maintainer_email || '';
+      return `<tr><td>${g[0]}</td><td>${email}</td><td><span class="badge">${g[1]}</span></td></tr>`;
     }).join('');
 }
 
