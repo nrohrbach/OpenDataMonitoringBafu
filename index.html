@@ -250,6 +250,8 @@
     .data-table-nested { font-size: 0.8rem; box-shadow: none; }
     .data-table-nested th { background: var(--ob-color-white); }
     .data-table-nested tr:hover td { background: var(--ob-color-white); }
+    .pkg-row { cursor: pointer; }
+    .pkg-row:hover td { background: var(--ob-color-primary-light) !important; color: var(--ob-color-primary-dark); }
 
     /* ─── BADGE ───────────────────────────────────────────────── */
     .badge {
@@ -692,7 +694,7 @@ function renderAbteilung() {
       const email = pkgs[0]?.maintainer_email || '';
       const rowsHtml = pkgs
         .sort((a,b) => (a.title_de||'').localeCompare(b.title_de||''))
-        .map(p => `<tr><td>${p.title_de || p.package_name}</td><td>${p.package_name}</td><td>${p.modified || ''}</td></tr>`)
+        .map(p => `<tr class="pkg-row" data-url="https://opendata.swiss/de/dataset/${encodeURIComponent(p.package_name)}"><td>${p.title_de || p.package_name}</td><td>${p.package_name}</td><td>${p.modified || ''}</td></tr>`)
         .join('');
       return `
         <tr class="abt-row" data-target="abt-detail-${i}">
@@ -718,6 +720,12 @@ function renderAbteilung() {
       const open = detail.style.display !== 'none';
       detail.style.display = open ? 'none' : 'table-row';
       row.querySelector('.abt-toggle').textContent = open ? '▸' : '▾';
+    });
+  });
+
+  tbl.querySelectorAll('.pkg-row').forEach(row => {
+    row.addEventListener('click', () => {
+      window.open(row.dataset.url, '_blank', 'noopener');
     });
   });
 }
