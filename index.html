@@ -312,6 +312,9 @@
     <div class="nav-item" data-page="themen">
       <span class="icon">🌿</span> Themen
     </div>
+    <div class="nav-item" data-page="plattform">
+      <span class="icon">🖥️</span> Plattform
+    </div>
   </nav>
 
   <!-- Main content -->
@@ -476,6 +479,26 @@
       </div>
     </div>
 
+    <!-- ── PLATTFORM ──────────────────────────────────────────── -->
+    <div id="page-plattform" class="page">
+      <div class="page-title">Plattform</div>
+      <div class="page-subtitle">Verteilung der Ressourcen nach Hosting-Domain (aus dem Attribut <code>url</code>)</div>
+      <div class="chart-row">
+        <div class="chart-card">
+          <h2>Ressourcen pro Plattform (aktuell)</h2>
+          <div id="chart-plat-bar"></div>
+        </div>
+        <div class="chart-card">
+          <h2>Top-6 Plattformen über Zeit</h2>
+          <div id="chart-plat-line"></div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h2>Tabelle: Plattformen</h2>
+        <table class="data-table" id="table-plat"></table>
+      </div>
+    </div>
+
   </main>
 </div>
 
@@ -566,6 +589,7 @@ function renderPage(page) {
       case 'stac':       renderStac();      break;
       case 'lizenzen':   renderLizenzen();  break;
       case 'themen':     renderThemen();    break;
+      case 'plattform':  renderPlattform(); break;
     }
   }
 }
@@ -941,6 +965,88 @@ function renderThemen() {
     marker: { color: COLORS[0] }
   }], plotDefaults({ margin: { t:10,r:30,b:40,l:160 }, yaxis: { autorange: 'reversed' } }),
   { responsive: true, displayModeBar: false });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PLATTFORM
+// ─────────────────────────────────────────────────────────────────────────────
+function getPlatform(url) {
+  if (!url) return '(leer)';
+  try {
+    return new URL(url).hostname || '(leer)';
+  } catch (e) {
+    const match = url.match(/^[a-z]+:\/\/([^\/]+)/i);
+    return match ? match[1] : '(leer)';
+  }
+}
+
+function renderPlattform() {
+  const latestD = latestDate(resources);
+  const latest  = byDate(resources, latestD);
+  const platOf  = r => getPlatform(r.url);
+
+  const platCount = {};
+  latest.forEach(r => { const p = platOf(r); platCount[p] = (platCount[p] || 0) + 1; });
+  const grouped = Object.entries(platCount).sort((a,b) => b[1]-a[1]);
+
+  // Bar chart
+  Plotly.newPlot('chart-plat-bar', [
+    barTrace(grouped.map(g=>g[0]), grouped.map(g=>g[1]), 'Ressourcen', COLORS[0])
+  ], plotDefaults({ margin: { t:10,r:10,b:120,l:40 }, xaxis: { tickangle: -40 } }),
+  { responsive: true, displayModeBar: false });
+
+  // Top-6 line over time
+  const top6  = grouped.slice(0, 6).map(g => g[0]);
+  const dates = [...new Set(resources.map(r=>r.snapshot_date))].sort();
+  const traces = top6.map((plat, i) => lineTrace(
+    dates,
+    dates.map(d => byDate(resources, d).filter(r => platOf(r) === plat).length),
+    plat, COLORS[i]
+  ));
+  Plotly.newPlot('chart-plat-line', traces,
+    plotDefaults({ legend: { orientation: 'h', y: -0.3 } }),
+    { responsive: true, displayModeBar: false });
+
+  // Table (Zeilen aufklappbar → zeigt Ressourcen der Plattform)
+  const tbl = document.getElementById('table-plat');
+  tbl.innerHTML = `<tr><th></th><th>Plattform</th><th>Ressourcen</th></tr>` +
+    grouped.map((g, i) => {
+      const res = latest.filter(r => platOf(r) === g[0]);
+      const rowsHtml = res
+        .sort((a,b) => (a.title_de||'').localeCompare(b.title_de||''))
+        .map(r => `<tr class="pkg-row" data-url="https://opendata.swiss/de/dataset/${encodeURIComponent(r.package_name)}"><td>${r.title_de || r.resource_id}</td><td>${r.package_name}</td><td>${r.format || ''}</td></tr>`)
+        .join('');
+      return `
+        <tr class="abt-row" data-target="plat-detail-${i}">
+          <td class="abt-toggle">▸</td>
+          <td>${g[0]}</td>
+          <td><span class="badge">${g[1]}</span></td>
+        </tr>
+        <tr id="plat-detail-${i}" class="abt-detail" style="display:none;">
+          <td></td>
+          <td colspan="2">
+            <table class="data-table data-table-nested">
+              <tr><th>Titel</th><th>package_name</th><th>Format</th></tr>
+              ${rowsHtml}
+            </table>
+          </td>
+        </tr>`;
+    }).join('');
+
+  tbl.querySelectorAll('.abt-row').forEach(row => {
+    row.addEventListener('click', () => {
+      const detail = document.getElementById(row.dataset.target);
+      const open = detail.style.display !== 'none';
+      detail.style.display = open ? 'none' : 'table-row';
+      row.querySelector('.abt-toggle').textContent = open ? '▸' : '▾';
+    });
+  });
+
+  tbl.querySelectorAll('.pkg-row').forEach(row => {
+    row.addEventListener('click', () => {
+      window.open(row.dataset.url, '_blank', 'noopener');
+    });
+  });
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
