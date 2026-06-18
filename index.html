@@ -435,7 +435,7 @@
     <!-- ── LIZENZEN & AKTUALITÄT ─────────────────────────────── -->
     <div id="page-lizenzen" class="page">
       <div class="page-title">Lizenzen &amp; Aktualität</div>
-      <div class="page-subtitle">Lizenzverteilung und Aktualität der Packages (letztes Änderungsdatum)</div>
+      <div class="page-subtitle">Lizenzverteilung und Aktualität der Ressourcen (letztes Änderungsdatum)</div>
       <div class="chart-row">
         <div class="chart-card">
           <h2>Lizenzverteilung (aktuell)</h2>
@@ -798,8 +798,8 @@ function renderStac() {
 // LIZENZEN & AKTUALITÄT
 // ─────────────────────────────────────────────────────────────────────────────
 function renderLizenzen() {
-  const latestD = latestDate(packages);
-  const latest  = byDate(packages, latestD);
+  const latestD = latestDate(resources);
+  const latest  = byDate(resources, latestD);
 
   // Lizenz-Pie
   const licGroups = groupCount(latest, 'license').slice(0, 8);
@@ -821,16 +821,16 @@ function renderLizenzen() {
   });
   const ySorted = Object.entries(years).sort((a,b)=>a[0].localeCompare(b[0]));
   Plotly.newPlot('chart-modified-bar', [
-    barTrace(ySorted.map(y=>y[0]), ySorted.map(y=>y[1]), 'Packages', COLORS[0])
+    barTrace(ySorted.map(y=>y[0]), ySorted.map(y=>y[1]), 'Ressourcen', COLORS[0])
   ], plotDefaults({ xaxis: { type: 'category' } }),
   { responsive: true, displayModeBar: false });
 
   // Lizenzen über Zeit (top 5)
   const top5lic = licGroups.slice(0, 5).map(g => g[0]);
-  const dates   = [...new Set(packages.map(r=>r.snapshot_date))].sort();
+  const dates   = [...new Set(resources.map(r=>r.snapshot_date))].sort();
   const traces  = top5lic.map((lic, i) => lineTrace(
     dates,
-    dates.map(d => byDate(packages,d).filter(r=>r.license===lic).length),
+    dates.map(d => byDate(resources,d).filter(r=>r.license===lic).length),
     lic || '(leer)', COLORS[i]
   ));
   Plotly.newPlot('chart-lic-line', traces,
