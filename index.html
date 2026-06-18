@@ -450,6 +450,10 @@
         <h2>Lizenzen über Zeit</h2>
         <div id="chart-lic-line"></div>
       </div>
+      <div class="chart-card">
+        <h2>Tabelle: Lizenzen</h2>
+        <table class="data-table" id="table-lic"></table>
+      </div>
     </div>
 
     <!-- ── THEMEN ─────────────────────────────────────────────── -->
@@ -836,6 +840,48 @@ function renderLizenzen() {
   Plotly.newPlot('chart-lic-line', traces,
     plotDefaults({ legend: { orientation: 'h', y: -0.3 } }),
     { responsive: true, displayModeBar: false });
+
+  // Table (Zeilen aufklappbar → zeigt Ressourcen der Lizenz)
+  const licGroupsAll = groupCount(latest, 'license');
+  const tbl = document.getElementById('table-lic');
+  tbl.innerHTML = `<tr><th></th><th>Lizenz</th><th>Ressourcen</th></tr>` +
+    licGroupsAll.map((g, i) => {
+      const res = latest.filter(r => r.license === g[0]);
+      const rowsHtml = res
+        .sort((a,b) => (a.title_de||'').localeCompare(b.title_de||''))
+        .map(r => `<tr class="pkg-row" data-url="https://opendata.swiss/de/dataset/${encodeURIComponent(r.package_name)}"><td>${r.title_de || r.resource_id}</td><td>${r.package_name}</td><td>${r.format || ''}</td></tr>`)
+        .join('');
+      return `
+        <tr class="abt-row" data-target="lic-detail-${i}">
+          <td class="abt-toggle">▸</td>
+          <td>${g[0] || '(leer)'}</td>
+          <td><span class="badge">${g[1]}</span></td>
+        </tr>
+        <tr id="lic-detail-${i}" class="abt-detail" style="display:none;">
+          <td></td>
+          <td colspan="2">
+            <table class="data-table data-table-nested">
+              <tr><th>Titel</th><th>package_name</th><th>Format</th></tr>
+              ${rowsHtml}
+            </table>
+          </td>
+        </tr>`;
+    }).join('');
+
+  tbl.querySelectorAll('.abt-row').forEach(row => {
+    row.addEventListener('click', () => {
+      const detail = document.getElementById(row.dataset.target);
+      const open = detail.style.display !== 'none';
+      detail.style.display = open ? 'none' : 'table-row';
+      row.querySelector('.abt-toggle').textContent = open ? '▸' : '▾';
+    });
+  });
+
+  tbl.querySelectorAll('.pkg-row').forEach(row => {
+    row.addEventListener('click', () => {
+      window.open(row.dataset.url, '_blank', 'noopener');
+    });
+  });
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
