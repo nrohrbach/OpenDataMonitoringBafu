@@ -6,26 +6,33 @@
   <title>OGD Monitoring BAFU</title>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <!-- Offizielle Oblique CSS-Distribution (vendored, MIT, @oblique/oblique v15.4.0) -->
+  <link rel="stylesheet" href="vendor/oblique/oblique-core.css" />
+  <link rel="stylesheet" href="vendor/oblique/oblique-components.css" />
+  <link rel="stylesheet" href="vendor/oblique/oblique-alert.css" />
   <style>
+    /* Eigene CSS Custom Properties, Werte 1:1 aus den offiziellen
+       Oblique Design Tokens (@oblique/oblique/styles/scss/core/_variables.scss
+       und _palette.scss, Version 15.4.0). */
     :root {
-      --ob-color-primary:       #006F73;
-      --ob-color-primary-dark:  #005457;
-      --ob-color-primary-light: #E5F3F3;
-      --ob-color-accent:        #D4001A;
-      --ob-color-black:         #222222;
-      --ob-color-gray-dark:     #454545;
-      --ob-color-gray:          #767676;
-      --ob-color-gray-light:    #D5D5D5;
-      --ob-color-bg:            #F5F5F5;
+      --ob-color-primary:       #46596B; /* $ob-primary  (secondary-500) */
+      --ob-color-primary-dark:  #263645; /* secondary-700 */
+      --ob-color-primary-light: #F0F4F7; /* secondary-50  ($ob-extra-light) */
+      --ob-color-accent:        #E53940; /* $ob-accent (red-500) */
+      --ob-color-black:         #1C2834; /* $ob-default (secondary-800) */
+      --ob-color-gray-dark:     #46596B; /* secondary-500 */
+      --ob-color-gray:          #828E9A; /* secondary-300 */
+      --ob-color-gray-light:    #ACB4BD; /* secondary-200 */
+      --ob-color-bg:            #F0F4F7; /* secondary-50 ($ob-extra-light) */
       --ob-color-white:         #FFFFFF;
-      --ob-font-family:         'Arial', 'Helvetica Neue', sans-serif;
-      --ob-space-xs:  4px;
-      --ob-space-sm:  8px;
-      --ob-space-md:  16px;
-      --ob-space-lg:  24px;
-      --ob-space-xl:  40px;
-      --ob-shadow:    0 2px 8px rgba(0,0,0,0.12);
-      --ob-radius:    4px;
+      --ob-font-family:         'Noto Sans', Arial, system-ui, -apple-system, BlinkMacSystemFont, sans-serif; /* $ob-font */
+      --ob-space-xs:  4px;   /* $ob-spacing-xs */
+      --ob-space-sm:  8px;   /* $ob-spacing-sm */
+      --ob-space-md:  12px;  /* $ob-spacing-md */
+      --ob-space-lg:  24px;  /* $ob-spacing-lg */
+      --ob-space-xl:  32px;  /* $ob-spacing-xl */
+      --ob-shadow:    0 2px 4px rgba(0,0,0,0.06), 0 4px 10px rgba(0,0,0,0.08); /* ob-shadow-default */
+      --ob-radius:    4px;   /* $ob-border-radius-base */
       --ob-border:    1px solid var(--ob-color-gray-light);
     }
 
@@ -42,18 +49,18 @@
 
     /* ─── HEADER ─────────────────────────────────────────────── */
     header {
-      background: var(--ob-color-primary);
-      color: var(--ob-color-white);
-      padding: var(--ob-space-md) var(--ob-space-xl);
+      background: var(--ob-color-white);
+      color: var(--ob-color-black);
+      padding: var(--ob-space-sm) var(--ob-space-xl);
       display: flex;
       align-items: center;
       gap: var(--ob-space-md);
-      box-shadow: var(--ob-shadow);
+      border-bottom: 1px solid #DFE4E9; /* secondary-100 */
     }
     .header-logo {
       width: 48px;
       height: 48px;
-      background: var(--ob-color-white);
+      background: var(--ob-color-primary);
       border-radius: var(--ob-radius);
       display: flex;
       align-items: center;
@@ -61,8 +68,14 @@
       flex-shrink: 0;
     }
     .header-logo svg { width: 36px; height: 36px; }
-    header h1 { font-size: 1.35rem; font-weight: 700; letter-spacing: 0.01em; }
-    header p  { font-size: 0.82rem; opacity: 0.85; margin-top: 2px; }
+    header h1 {
+      font-size: 1.65rem;
+      font-weight: 300;
+      letter-spacing: 0.01em;
+      padding-left: var(--ob-space-sm);
+      border-left: 1px solid #DFE4E9;
+    }
+    header p  { font-size: 0.82rem; color: var(--ob-color-gray-dark); margin-top: 2px; }
 
     /* ─── APP SHELL ───────────────────────────────────────────── */
     .app-shell {
@@ -278,7 +291,7 @@
   <div class="header-logo">
     <!-- Swiss cross SVG -->
     <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="36" height="36" fill="#D4001A"/>
+      <rect width="36" height="36" fill="#D8232A"/>
       <rect x="14" y="6" width="8" height="24" fill="white"/>
       <rect x="6" y="14" width="24" height="8" fill="white"/>
     </svg>
@@ -381,7 +394,7 @@
       </div>
       <div class="chart-card">
         <h2>Tabelle: Abteilungen</h2>
-        <table class="data-table" id="table-abt"></table>
+        <table class="data-table ob-table" id="table-abt"></table>
       </div>
     </div>
 
@@ -455,7 +468,7 @@
       </div>
       <div class="chart-card">
         <h2>Tabelle: Lizenzen</h2>
-        <table class="data-table" id="table-lic"></table>
+        <table class="data-table ob-table" id="table-lic"></table>
       </div>
     </div>
 
@@ -495,7 +508,7 @@
       </div>
       <div class="chart-card">
         <h2>Tabelle: Plattformen</h2>
-        <table class="data-table" id="table-plat"></table>
+        <table class="data-table ob-table" id="table-plat"></table>
       </div>
     </div>
 
@@ -506,16 +519,29 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // CONSTANTS
 // ─────────────────────────────────────────────────────────────────────────────
+// Farbpalette 1:1 aus den offiziellen Oblique Design Tokens (_palette.scss)
 const COLORS = [
-  '#006F73','#D4001A','#005457','#F5A623','#4A90D9',
-  '#7B4F9E','#2ECC71','#E67E22','#1ABC9C','#E74C3C',
-  '#3498DB','#9B59B6','#F39C12','#16A085','#C0392B'
+  '#46596B', // secondary-500 (primary)
+  '#E53940', // red-500 (accent)
+  '#059669', // green-600
+  '#EA580C', // orange-600
+  '#2563EB', // blue-600
+  '#8655F6', // purple-500
+  '#828E9A', // secondary-300
+  '#BF1F25', // red-700
+  '#047857', // green-700
+  '#1E40AF', // blue-800
+  '#6D28D9', // purple-700
+  '#9A3412', // orange-800
+  '#263645', // secondary-700
+  '#FC656B', // red-400
+  '#34D399'  // green-400
 ];
 
 const PLOT_LAYOUT_BASE = {
   paper_bgcolor: 'rgba(0,0,0,0)',
   plot_bgcolor:  'rgba(0,0,0,0)',
-  font: { family: 'Arial, Helvetica Neue, sans-serif', color: '#454545', size: 12 },
+  font: { family: 'Noto Sans, Arial, sans-serif', color: '#46596B', size: 12 },
   margin: { t: 10, r: 10, b: 60, l: 10 },
   colorway: COLORS,
   legend: { bgcolor: 'rgba(0,0,0,0)' }
@@ -561,7 +587,7 @@ Promise.all([
   renderPage('dashboard');
 }).catch(err => {
   document.getElementById('loading').innerHTML =
-    `<p style="color:#D4001A">Fehler beim Laden der Daten:<br>${err}</p>`;
+    `<p style="color:var(--ob-color-accent)">Fehler beim Laden der Daten:<br>${err}</p>`;
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -734,7 +760,7 @@ function renderAbteilung() {
         <tr id="abt-detail-${i}" class="abt-detail" style="display:none;">
           <td></td>
           <td colspan="3">
-            <table class="data-table data-table-nested">
+            <table class="data-table data-table-nested ob-table ob-table-sm">
               <tr><th>Titel</th><th>package_name</th><th>Geändert</th></tr>
               ${rowsHtml}
             </table>
@@ -884,7 +910,7 @@ function renderLizenzen() {
         <tr id="lic-detail-${i}" class="abt-detail" style="display:none;">
           <td></td>
           <td colspan="2">
-            <table class="data-table data-table-nested">
+            <table class="data-table data-table-nested ob-table ob-table-sm">
               <tr><th>Titel</th><th>package_name</th><th>Format</th></tr>
               ${rowsHtml}
             </table>
@@ -1025,7 +1051,7 @@ function renderPlattform() {
         <tr id="plat-detail-${i}" class="abt-detail" style="display:none;">
           <td></td>
           <td colspan="2">
-            <table class="data-table data-table-nested">
+            <table class="data-table data-table-nested ob-table ob-table-sm">
               <tr><th>Titel</th><th>package_name</th><th>Format</th></tr>
               ${rowsHtml}
             </table>

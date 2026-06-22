@@ -45,6 +45,7 @@ jobs:
           cp index.html _deploy/
           cp ogd_packages_history.csv _deploy/
           cp ogd_resources_history.csv _deploy/
+          cp -r vendor _deploy/
 
       - name: GitHub Pages deployen
         uses: peaceiris/actions-gh-pages@v3
