@@ -58,16 +58,11 @@
       border-bottom: 1px solid #DFE4E9; /* secondary-100 */
     }
     .header-logo {
-      width: 48px;
-      height: 48px;
-      background: var(--ob-color-primary);
-      border-radius: var(--ob-radius);
       display: flex;
       align-items: center;
-      justify-content: center;
       flex-shrink: 0;
     }
-    .header-logo svg { width: 36px; height: 36px; }
+    .header-logo img { height: 38px; width: auto; display: block; }
     header h1 {
       font-size: 1.65rem;
       font-weight: 300;
@@ -289,12 +284,7 @@
 <!-- Header -->
 <header>
   <div class="header-logo">
-    <!-- Swiss cross SVG -->
-    <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="36" height="36" fill="#D8232A"/>
-      <rect x="14" y="6" width="8" height="24" fill="white"/>
-      <rect x="6" y="14" width="24" height="8" fill="white"/>
-    </svg>
+    <img src="vendor/oblique/images/logo.svg" alt="Schweizerische Eidgenossenschaft">
   </div>
   <div>
     <h1>OGD Monitoring BAFU</h1>
