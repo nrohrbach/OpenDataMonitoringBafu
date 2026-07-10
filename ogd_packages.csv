@@ -1,6 +1,7 @@
 package_name,title_de,maintainer,maintainer_email,issued,modified,license,keywords_de
-waldbrandgefahr,Waldbrandgefahr,info@bafu.admin.ch,,2023-03-15T00:00:00,2026-07-07T10:14:16+00:00,,
-waldbrandpraventionsmassnahmen,Waldbrandpräventionsmassnahmen,info@bafu.admin.ch,,2023-03-15T00:00:00,2026-07-07T10:14:17+00:00,,
+waldbrandgefahr,Waldbrandgefahr,info@bafu.admin.ch,,2023-03-15T00:00:00,2026-07-09T10:13:24+00:00,,
+waldbrandpraventionsmassnahmen,Waldbrandpräventionsmassnahmen,info@bafu.admin.ch,,2023-03-15T00:00:00,2026-07-09T10:13:21+00:00,,
+naturlicher-wasserhaushalt-der-ganzen-schweiz-und-bedeutender-grosseinzugsgebiete,Natürlicher Wasserhaushalt der ganzen Schweiz und bedeutender Grosseinzugsgebiete,hydrologie@bafu.admin.ch,,,2024-12-31T00:00:00,,wasser
 schweizweite-hinweiskarten-des-lichtbedingten-verjungungspotentials-stand-lfi-vhm-2024,Schweizweite Hinweiskarten des lichtbedingten Verjüngungspotentials (Stand LFI VHM 2024),remotesensing@wsl.ch,,2026-05-21T00:00:00,,,"bgdi-bundesgeodaten-infrastruktur,waldnutzung,fise-forest-information-system-for-europe,aufbewahrungs--und-archivierungsplanung-aap---bund,waldentwicklung,airborne-laser-scanning,licht,wald,waldbestand,bgdi-bundesgeodaten-infrastruktur"
 allgemeine-lage-der-grundwasserstande-und-quellschuttungen,Allgemeine Lage der Grundwasserstände und Quellschüttungen,hydrogeologie@bafu.admin.ch,,2016-09-21T00:00:00,,,"hydrologie,gewasser,bgdi-bundesgeodaten-infrastruktur"
 typisierung-der-schweizer-fliessgewasser,Typisierung der Schweizer Fliessgewässer,wasser@bafu.admin.ch,,2013-01-01T00:00:00,,,"bgdi-bundesgeodaten-infrastruktur,aufbewahrungs--und-archivierungsplanung-aap---bund,geobasisdaten,fliessgewasser"
@@ -350,7 +351,6 @@ lfi-themen-nach-baumart-5-klassen,LFI: Themen nach Baumart (5 Klassen),wald@bafu
 lfi-themen-nach-exposition-8-klassen,LFI: Themen nach Exposition (9 Klassen),wald@bafu.admin.ch,,2023-06-22T05:40:04+00:00,2024-10-14T17:39:53+00:00,,"forstwirtschaft,landesforstinventar,wald"
 lfi-themen-nach-brusthohendurchmesser-4-cm-stufen,LFI: Themen nach Brusthöhendurchmesser (4-cm-Stufen),wald@bafu.admin.ch,,2023-06-22T05:38:56+00:00,2024-10-14T17:36:32+00:00,,"forstwirtschaft,landesforstinventar,wald"
 lfi-themen-nach-durchmesser-starkeklasse,LFI: Themen nach Brusthöhendurchmesser (Stärkeklassen),wald@bafu.admin.ch,,2023-06-22T05:38:05+00:00,2024-10-14T17:29:26+00:00,,"forstwirtschaft,landesforstinventar,wald"
-naturlicher-wasserhaushalt-der-ganzen-schweiz-und-bedeutender-grosseinzugsgebiete,Natürlicher Wasserhaushalt der ganzen Schweiz und bedeutender Grosseinzugsgebiete,hydrologie@bafu.admin.ch,,,2024-12-31T00:00:00,,wasser
 grosse-hochwasserabflusse-in-der-schweiz,Grosse Hochwasserabflüsse in der Schweiz,hydrologie@bafu.admin.ch,,2018-03-15T00:00:00,2018-12-07T00:00:00,,hochwasser
 national-prioritare-arten,National Prioritäre Arten,bnl@bafu.admin.ch,,2025-07-14T00:00:00,,,"artenforderung,biodiversitat"
 liste-der-national-prioritaren-lebensraume,Liste der National Prioritären  Lebensräume,bnl@bafu.admin.ch,,2025-06-30T00:00:00,,,"artenforderung,biodiversitat"
