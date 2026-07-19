@@ -1,6 +1,6 @@
 package_name,title_de,maintainer,maintainer_email,issued,modified,license,keywords_de
-waldbrandgefahr,Waldbrandgefahr,info@bafu.admin.ch,,2023-03-15T00:00:00,2026-07-14T10:14:18+00:00,,
-waldbrandpraventionsmassnahmen,Waldbrandpräventionsmassnahmen,info@bafu.admin.ch,,2023-03-15T00:00:00,2026-07-14T10:14:18+00:00,,
+waldbrandgefahr,Waldbrandgefahr,info@bafu.admin.ch,,2023-03-15T00:00:00,2026-07-18T17:14:13+00:00,,
+waldbrandpraventionsmassnahmen,Waldbrandpräventionsmassnahmen,info@bafu.admin.ch,,2023-03-15T00:00:00,2026-07-18T10:14:11+00:00,,
 schweizweite-hinweiskarten-des-lichtbedingten-verjungungspotentials-stand-lfi-vhm-2024,Schweizweite Hinweiskarten des lichtbedingten Verjüngungspotentials (Stand LFI VHM 2024),remotesensing@wsl.ch,,2026-05-21T00:00:00,,,"waldentwicklung,waldnutzung,fise-forest-information-system-for-europe,aufbewahrungs--und-archivierungsplanung-aap---bund,airborne-laser-scanning,bgdi-bundesgeodaten-infrastruktur,licht,wald,waldbestand,bgdi-bundesgeodaten-infrastruktur"
 co2-emissionen-aus-brennstoffen-witterungsbereinigt-und-treibstoffen,CO2-Emissionen aus Brennstoffen (witterungsbereinigt) und Treibstoffen,climatereporting@bafu.admin.ch,,2022-10-21T00:00:00,2026-07-13T08:46:22.818000+00:00,,
 anteile-der-treibhausgasemissionen-aus-treibstoffen-im-sektor-verkehr,Anteile der Treibhausgasemissionen aus Treibstoffen im Sektor Verkehr,climatereporting@bafu.admin.ch,,2022-09-29T00:00:00,2026-07-13T08:45:45.045000+00:00,,
@@ -177,7 +177,6 @@ fohnhaufigkeit-im-jahr-periode-variabel-maximal-1969-2013,"Föhnhäufigkeit im J
 topographische-einzugsgebiete-der-schweizer-gewasser-teileinzugsgebiete-40-km,Topographische Einzugsgebiete der Schweizer Gewässer: Teileinzugsgebiete 40 km²,hydrologie@bafu.admin.ch,,2010-07-01T00:00:00,,,"umweltuberwachung,gewassernetz,bgdi-bundesgeodaten-infrastruktur"
 invasive-gebietsfremde-pflanzen-potentialkarte-kirschlorbeer,Invasive gebietsfremde Pflanzen - Potentialkarte Kirschlorbeer,altlasten@bafu.admin.ch,,,2015-04-02T00:00:00,,"umwelt,bgdi-bundesgeodaten-infrastruktur"
 topographische-einzugsgebiete-schweizer-gewasser-gebietsauslasse,Topographische Einzugsgebiete Schweizer Gewässer: Gebietsauslässe,hydrologie@bafu.admin.ch,,2010-07-01T00:00:00,,,"gewassernetz,geobasisdaten,bgdi-bundesgeodaten-infrastruktur"
-quellen-und-schwinden-in-karstgebieten,Quellen und Schwinden in Karstgebieten,hydrogeologie@bafu.admin.ch,,2016-03-01T00:00:00,,,"grundwasser,quelle,karstgebiet,hydrogeologie,umwelt"
 sturmgefahrdung-boenspitzen-mit-wiederkehrperiode-50-jahre,Sturmgefährdung: Böenspitzen mit Wiederkehrperiode 50 Jahre,wald@bafu.admin.ch,,2014-11-07T00:00:00,,,"naturrisikoanalyse,wind,sturm,luftbewegung,naturrisiko,bgdi-bundesgeodaten-infrastruktur"
 beurteilung-des-biologischen-gewasserzustandes-fische,Beurteilung des biologischen Gewässerzustandes: Fische,wasser@bafu.admin.ch,,2014-03-26T00:00:00,,,"umwelt,bgdi-bundesgeodaten-infrastruktur,fliessgewasser"
 monatliche-niederschlagserosivitatskarten-r-faktor-der-schweiz-in-mj-mm-ha-h-monat-april,"Monatliche Niederschlagserosivitätskarten (R-Faktor) der Schweiz in MJ mm ha⁻¹ h⁻¹ Monat⁻¹, April",altlasten@bafu.admin.ch,,2019-10-02T00:00:00,2020-02-27T00:00:00,,"bodenerosion,niederschlagserhohung,erosionsschutz,erosion,boden,bgdi-bundesgeodaten-infrastruktur,aufbewahrungs--und-archivierungsplanung-aap---bund,e-geoch"
