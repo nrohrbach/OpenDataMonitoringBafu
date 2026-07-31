@@ -1,10 +1,10 @@
 package_name,title_de,maintainer,maintainer_email,issued,modified,license,keywords_de
-waldbrandgefahr,Waldbrandgefahr,info@bafu.admin.ch,,2023-03-15T00:00:00,2026-07-29T10:14:19+00:00,,
-waldbrandpraventionsmassnahmen,Waldbrandpräventionsmassnahmen,info@bafu.admin.ch,,2023-03-15T00:00:00,2026-07-29T10:14:19+00:00,,
+waldbrandgefahr,Waldbrandgefahr,info@bafu.admin.ch,,2023-03-15T00:00:00,2026-07-30T10:14:19+00:00,,
+waldbrandpraventionsmassnahmen,Waldbrandpräventionsmassnahmen,info@bafu.admin.ch,,2023-03-15T00:00:00,2026-07-30T10:14:19+00:00,,
+nationales-beobachtungsnetz-fur-luftfremdstoffe-nabel-stationen,Nationales Beobachtungsnetz für Luftfremdstoffe NABEL: Stationen,chemicals@bafu.admin.ch,,1979-01-01T00:00:00,2021-01-01T00:00:00,,"schadstoff,luftschadstoff,luft,atmospharische-bedingungen,bgdi-bundesgeodaten-infrastruktur,geobasisdaten,e-geoch,aufbewahrungs--und-archivierungsplanung-aap---bund"
 alpweiden-geschutzt-durch-herdenschutzhunde,Alpweiden geschützt durch Herdenschutzhunde 2026,bnl@bafu.admin.ch,,2020-05-12T01:25:00,2026-05-18T00:00:00,,bgdi-bundesgeodaten-infrastruktur
 karte-der-historischen-erdbeben-in-der-schweiz-und-im-grenznahem-ausland,Karte der historischen Erdbeben in der Schweiz und im grenznahem Ausland,sedweb@sed.ethz.ch,,2011-04-28T00:00:00,,,"erdbeben,katalog,gebiete-mit-naturbedingten-risiken,bgdi-bundesgeodaten-infrastruktur"
 alpweiden-geschutzt-durch-herdenschutzhunde1,Alpweiden geschützt durch Herdenschutzhunde,bnl@bafu.admin.ch,,2020-05-12T01:25:00,2026-07-29T00:00:00,,bgdi-bundesgeodaten-infrastruktur
-nationales-beobachtungsnetz-fur-luftfremdstoffe-nabel-stationen,Nationales Beobachtungsnetz für Luftfremdstoffe NABEL: Stationen,chemicals@bafu.admin.ch,,1979-01-01T00:00:00,2021-01-01T00:00:00,,"schadstoff,luftschadstoff,luft,atmospharische-bedingungen,bgdi-bundesgeodaten-infrastruktur,geobasisdaten,e-geoch,aufbewahrungs--und-archivierungsplanung-aap---bund"
 naturlicher-wasserhaushalt-der-ganzen-schweiz-und-bedeutender-grosseinzugsgebiete,Natürlicher Wasserhaushalt der ganzen Schweiz und bedeutender Grosseinzugsgebiete,hydrologie@bafu.admin.ch,,,2024-12-31T00:00:00,,wasser
 grosse-hochwasserabflusse-in-der-schweiz,Grosse Hochwasserabflüsse in der Schweiz,hydrologie@bafu.admin.ch,,2018-03-15T00:00:00,2018-12-07T00:00:00,,hochwasser
 national-prioritare-arten,National Prioritäre Arten,bnl@bafu.admin.ch,,2025-07-14T00:00:00,,,"artenforderung,biodiversitat"
