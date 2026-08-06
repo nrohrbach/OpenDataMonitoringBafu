@@ -599,8 +599,8 @@ function parseCsv(url) {
 }
 
 Promise.all([
-  parseCsv('ogd_packages_history.csv'),
-  parseCsv('ogd_resources_history.csv')
+  parseCsv('https://raw.githubusercontent.com/nrohrbach/OpenDataMonitoringBafu/main/ogd_packages_history.csv'),
+  parseCsv('https://raw.githubusercontent.com/nrohrbach/OpenDataMonitoringBafu/main/ogd_resources_history.csv')
 ]).then(([pkg, res]) => {
   packages  = pkg;
   resources = res;
