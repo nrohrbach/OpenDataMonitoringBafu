@@ -6,33 +6,26 @@
   <title>OGD Monitoring BAFU</title>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-  <!-- Offizielle Oblique CSS-Distribution (vendored, MIT, @oblique/oblique v15.4.0) -->
-  <link rel="stylesheet" href="vendor/oblique/oblique-core.css" />
-  <link rel="stylesheet" href="vendor/oblique/oblique-components.css" />
-  <link rel="stylesheet" href="vendor/oblique/oblique-alert.css" />
   <style>
-    /* Eigene CSS Custom Properties, Werte 1:1 aus den offiziellen
-       Oblique Design Tokens (@oblique/oblique/styles/scss/core/_variables.scss
-       und _palette.scss, Version 15.4.0). */
     :root {
-      --ob-color-primary:       #46596B; /* $ob-primary  (secondary-500) */
-      --ob-color-primary-dark:  #263645; /* secondary-700 */
-      --ob-color-primary-light: #F0F4F7; /* secondary-50  ($ob-extra-light) */
-      --ob-color-accent:        #E53940; /* $ob-accent (red-500) */
-      --ob-color-black:         #1C2834; /* $ob-default (secondary-800) */
-      --ob-color-gray-dark:     #46596B; /* secondary-500 */
-      --ob-color-gray:          #828E9A; /* secondary-300 */
-      --ob-color-gray-light:    #ACB4BD; /* secondary-200 */
-      --ob-color-bg:            #F0F4F7; /* secondary-50 ($ob-extra-light) */
+      --ob-color-primary:       #006F73;
+      --ob-color-primary-dark:  #005457;
+      --ob-color-primary-light: #E5F3F3;
+      --ob-color-accent:        #D4001A;
+      --ob-color-black:         #222222;
+      --ob-color-gray-dark:     #454545;
+      --ob-color-gray:          #767676;
+      --ob-color-gray-light:    #D5D5D5;
+      --ob-color-bg:            #F5F5F5;
       --ob-color-white:         #FFFFFF;
-      --ob-font-family:         'Noto Sans', Arial, system-ui, -apple-system, BlinkMacSystemFont, sans-serif; /* $ob-font */
-      --ob-space-xs:  4px;   /* $ob-spacing-xs */
-      --ob-space-sm:  8px;   /* $ob-spacing-sm */
-      --ob-space-md:  12px;  /* $ob-spacing-md */
-      --ob-space-lg:  24px;  /* $ob-spacing-lg */
-      --ob-space-xl:  32px;  /* $ob-spacing-xl */
-      --ob-shadow:    0 2px 4px rgba(0,0,0,0.06), 0 4px 10px rgba(0,0,0,0.08); /* ob-shadow-default */
-      --ob-radius:    4px;   /* $ob-border-radius-base */
+      --ob-font-family:         'Arial', 'Helvetica Neue', sans-serif;
+      --ob-space-xs:  4px;
+      --ob-space-sm:  8px;
+      --ob-space-md:  16px;
+      --ob-space-lg:  24px;
+      --ob-space-xl:  40px;
+      --ob-shadow:    0 2px 8px rgba(0,0,0,0.12);
+      --ob-radius:    4px;
       --ob-border:    1px solid var(--ob-color-gray-light);
     }
 
@@ -49,28 +42,27 @@
 
     /* ─── HEADER ─────────────────────────────────────────────── */
     header {
-      background: var(--ob-color-white);
-      color: var(--ob-color-black);
-      padding: var(--ob-space-sm) var(--ob-space-xl);
+      background: var(--ob-color-primary);
+      color: var(--ob-color-white);
+      padding: var(--ob-space-md) var(--ob-space-xl);
       display: flex;
       align-items: center;
       gap: var(--ob-space-md);
-      border-bottom: 1px solid #DFE4E9; /* secondary-100 */
+      box-shadow: var(--ob-shadow);
     }
     .header-logo {
+      width: 48px;
+      height: 48px;
+      background: var(--ob-color-white);
+      border-radius: var(--ob-radius);
       display: flex;
       align-items: center;
+      justify-content: center;
       flex-shrink: 0;
     }
-    .header-logo img { height: 38px; width: auto; display: block; }
-    header h1 {
-      font-size: 1.65rem;
-      font-weight: 300;
-      letter-spacing: 0.01em;
-      padding-left: var(--ob-space-sm);
-      border-left: 1px solid #DFE4E9;
-    }
-    header p  { font-size: 0.82rem; color: var(--ob-color-gray-dark); margin-top: 2px; }
+    .header-logo svg { width: 36px; height: 36px; }
+    header h1 { font-size: 1.35rem; font-weight: 700; letter-spacing: 0.01em; }
+    header p  { font-size: 0.82rem; opacity: 0.85; margin-top: 2px; }
 
     /* ─── APP SHELL ───────────────────────────────────────────── */
     .app-shell {
@@ -252,14 +244,18 @@
       border-bottom: var(--ob-border);
     }
     .data-table tr:hover td { background: var(--ob-color-primary-light); }
-    .abt-row { cursor: pointer; }
-    .abt-toggle { width: 24px; color: var(--ob-color-primary); font-size: 0.8rem; }
-    .abt-detail td { background: var(--ob-color-bg); padding: var(--ob-space-md); }
-    .data-table-nested { font-size: 0.8rem; box-shadow: none; }
-    .data-table-nested th { background: var(--ob-color-white); }
-    .data-table-nested tr:hover td { background: var(--ob-color-white); }
-    .pkg-row { cursor: pointer; }
-    .pkg-row:hover td { background: var(--ob-color-primary-light) !important; color: var(--ob-color-primary-dark); }
+
+    /* ─── TYPE BADGE ──────────────────────────────────────────── */
+    .type-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 500;
+      color: white;
+      margin: 2px 2px 2px 0;
+      white-space: nowrap;
+    }
 
     /* ─── BADGE ───────────────────────────────────────────────── */
     .badge {
@@ -284,7 +280,12 @@
 <!-- Header -->
 <header>
   <div class="header-logo">
-    <img src="vendor/oblique/images/logo.svg" alt="Schweizerische Eidgenossenschaft">
+    <!-- Swiss cross SVG -->
+    <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="36" height="36" fill="#D4001A"/>
+      <rect x="14" y="6" width="8" height="24" fill="white"/>
+      <rect x="6" y="14" width="24" height="8" fill="white"/>
+    </svg>
   </div>
   <div>
     <h1>OGD Monitoring BAFU</h1>
@@ -315,15 +316,12 @@
     <div class="nav-item" data-page="themen">
       <span class="icon">🌿</span> Themen
     </div>
-    <div class="nav-item" data-page="plattform">
-      <span class="icon">🖥️</span> Plattform
-    </div>
   </nav>
 
   <!-- Main content -->
   <main>
 
-    <!-- ── DASHBOARD ────────────────────────────────────────── -->
+    <!-- ── DASHBOARD ──────────────────────────────────────────── -->
     <div id="page-dashboard" class="page active">
       <div class="page-title">Dashboard</div>
       <div class="page-subtitle">Aktueller Stand und Gesamtentwicklung der BAFU Open-Data-Publikationen</div>
@@ -368,7 +366,7 @@
       </div>
     </div>
 
-    <!-- ── ABTEILUNG ─────────────────────────────────────────── -->
+    <!-- ── ABTEILUNG ───────────────────────────────────────────── -->
     <div id="page-abteilung" class="page">
       <div class="page-title">Packages nach Abteilung</div>
       <div class="page-subtitle">Anzahl Packages pro Abteilung (Maintainer) — aktueller Stand und Entwicklung</div>
@@ -384,7 +382,7 @@
       </div>
       <div class="chart-card">
         <h2>Tabelle: Abteilungen</h2>
-        <table class="data-table ob-table" id="table-abt"></table>
+        <table class="data-table" id="table-abt"></table>
       </div>
     </div>
 
@@ -404,7 +402,7 @@
       </div>
     </div>
 
-    <!-- ── STAC ──────────────────────────────────────────────── -->
+    <!-- ── STAC ─────────────────────────────────────────────── -->
     <div id="page-stac" class="page">
       <div class="page-title">STAC-Geodaten</div>
       <div class="page-subtitle">Ressourcen mit STAC-Browser-Link (data.geo.admin.ch/browser)</div>
@@ -438,10 +436,10 @@
       </div>
     </div>
 
-    <!-- ── LIZENZEN & AKTUALITÄT ─────────────────────────────── -->
+    <!-- ── LIZENZEN & AKTUALITÄT ───────────────────────────────────── -->
     <div id="page-lizenzen" class="page">
       <div class="page-title">Lizenzen &amp; Aktualität</div>
-      <div class="page-subtitle">Lizenzverteilung und Aktualität der Ressourcen (letztes Änderungsdatum)</div>
+      <div class="page-subtitle">Lizenzverteilung und Aktualität der Packages (letztes Änderungsdatum)</div>
       <div class="chart-row">
         <div class="chart-card">
           <h2>Lizenzverteilung (aktuell)</h2>
@@ -455,10 +453,6 @@
       <div class="chart-card">
         <h2>Lizenzen über Zeit</h2>
         <div id="chart-lic-line"></div>
-      </div>
-      <div class="chart-card">
-        <h2>Tabelle: Lizenzen</h2>
-        <table class="data-table ob-table" id="table-lic"></table>
       </div>
     </div>
 
@@ -482,66 +476,103 @@
       </div>
     </div>
 
-    <!-- ── PLATTFORM ──────────────────────────────────────────── -->
-    <div id="page-plattform" class="page">
-      <div class="page-title">Plattform</div>
-      <div class="page-subtitle">Verteilung der Ressourcen nach Hosting-Domain (aus dem Attribut <code>url</code>)</div>
-      <div class="chart-row">
-        <div class="chart-card">
-          <h2>Ressourcen pro Plattform (aktuell)</h2>
-          <div id="chart-plat-bar"></div>
-        </div>
-        <div class="chart-card">
-          <h2>Top-6 Plattformen über Zeit</h2>
-          <div id="chart-plat-line"></div>
-        </div>
-      </div>
-      <div class="chart-card">
-        <h2>Tabelle: Plattformen</h2>
-        <table class="data-table ob-table" id="table-plat"></table>
-      </div>
-    </div>
-
   </main>
 </div>
 
 <script>
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────────
 // CONSTANTS
-// ─────────────────────────────────────────────────────────────────────────────
-// Farbpalette 1:1 aus den offiziellen Oblique Design Tokens (_palette.scss)
+// ─────────────────────────────────────────────────────────────────────────────────
 const COLORS = [
-  '#46596B', // secondary-500 (primary)
-  '#E53940', // red-500 (accent)
-  '#059669', // green-600
-  '#EA580C', // orange-600
-  '#2563EB', // blue-600
-  '#8655F6', // purple-500
-  '#828E9A', // secondary-300
-  '#BF1F25', // red-700
-  '#047857', // green-700
-  '#1E40AF', // blue-800
-  '#6D28D9', // purple-700
-  '#9A3412', // orange-800
-  '#263645', // secondary-700
-  '#FC656B', // red-400
-  '#34D399'  // green-400
+  '#006F73','#D4001A','#005457','#F5A623','#4A90D9',
+  '#7B4F9E','#2ECC71','#E67E22','#1ABC9C','#E74C3C',
+  '#3498DB','#9B59B6','#F39C12','#16A085','#C0392B'
 ];
 
 const PLOT_LAYOUT_BASE = {
   paper_bgcolor: 'rgba(0,0,0,0)',
   plot_bgcolor:  'rgba(0,0,0,0)',
-  font: { family: 'Noto Sans, Arial, sans-serif', color: '#46596B', size: 12 },
+  font: { family: 'Arial, Helvetica Neue, sans-serif', color: '#454545', size: 12 },
   margin: { t: 10, r: 10, b: 60, l: 10 },
   colorway: COLORS,
   legend: { bgcolor: 'rgba(0,0,0,0)' }
 };
 
+const TYPE_RULES = [
+  {
+    id: 'geodaten', label: 'Geodaten', color: '#2a78d6',
+    detect: (pkg, res) => res.some(r =>
+      (r.url && (r.url.includes('geocat.ch') || r.url.includes('geo.admin.ch'))) ||
+      r.has_stac === 'True' ||
+      ['WMS','WMTS','WFS','GPKG','GeoJSON','SHP','KML','GeoTIFF']
+        .some(f => r.format && r.format.toUpperCase().includes(f.toUpperCase()))
+    )
+  },
+  {
+    id: 'tabellendaten', label: 'Tabellendaten', color: '#008300',
+    detect: (pkg, res) => res.some(r =>
+      ['CSV','XLSX','XLS','ODS','JSON','PARQUET']
+        .some(f => r.format && r.format.toUpperCase().includes(f.toUpperCase()))
+    )
+  },
+  {
+    id: 'webservice', label: 'Webservice', color: '#eda100',
+    detect: (pkg, res) => res.some(r =>
+      r.is_service === 'True' ||
+      ['API','REST','SPARQL','OGC','SERVICE']
+        .some(f => r.format && r.format.toUpperCase().includes(f.toUpperCase()))
+    )
+  },
+  {
+    id: 'dokument', label: 'Dokument', color: '#4a3aa7',
+    detect: (pkg, res) => res.some(r =>
+      ['PDF','DOCX','DOC','HTML','XML']
+        .some(f => r.format && r.format.toUpperCase().includes(f.toUpperCase()))
+    )
+  },
+  {
+    id: 'unbekannt', label: '?', color: '#898781',
+    detect: (pkg, res) => res.length === 0
+  }
+];
+
+function buildResourcesByPackage(res) {
+  const map = {};
+  res.forEach(r => {
+    if (!map[r.package_name]) map[r.package_name] = [];
+    map[r.package_name].push(r);
+  });
+  return map;
+}
+
+function getTypesForDepartment(email, pkgs, resByPkg) {
+  const typeSet = new Set();
+  pkgs.filter(p => p.maintainer_email === email).forEach(pkg => {
+    const res = resByPkg[pkg.package_name] || [];
+    TYPE_RULES.forEach(rule => { if (rule.detect(pkg, res)) typeSet.add(rule.id); });
+  });
+  return [...typeSet];
+}
+
+function typeBadgesHtml(typeIds, pkgs, resByPkg, email) {
+  return typeIds.map(id => {
+    const rule = TYPE_RULES.find(r => r.id === id);
+    const formats = [];
+    pkgs.filter(p => p.maintainer_email === email).forEach(pkg => {
+      (resByPkg[pkg.package_name] || []).forEach(r => {
+        if (r.format && !formats.includes(r.format)) formats.push(r.format);
+      });
+    });
+    const tip = formats.length ? 'Formate: ' + formats.slice(0, 5).join(', ') + (formats.length > 5 ? ' …' : '') : '';
+    return `<span class="type-badge" style="background:${rule.color}"${tip ? ` title="${tip}"` : ''}>${rule.label}</span>`;
+  }).join('');
+}
+
 const BAFU_THEMEN = {
   'Wald':       ['wald','forst','tree','bäume','waldbrand'],
   'Wasser':     ['wasser','fluss','see','grundwasser','gewässer','hydrologie'],
   'Luft':       ['luft','luftqualität','emission','klima','co2','treibhausgas'],
-  'Biodiversität': ['biodiversität','arten','fauna','flora','schutzgebiet','lebensraum'],
+  'Biodiversätt': ['biodiversätt','arten','fauna','flora','schutzgebiet','lebensraum'],
   'Boden':      ['boden','erosion','altlasten','deponie'],
   'Lärm':       ['lärm','schall','akustik'],
   'Strahlung':  ['strahlung','uv','elektrosmog'],
@@ -552,9 +583,9 @@ const BAFU_THEMEN = {
   'Georeferenz':['geodaten','gis','karte','wms','wmts','shapefile']
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────────
 // DATA LOADING
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────────
 let packages = [], resources = [];
 
 function parseCsv(url) {
@@ -577,12 +608,12 @@ Promise.all([
   renderPage('dashboard');
 }).catch(err => {
   document.getElementById('loading').innerHTML =
-    `<p style="color:var(--ob-color-accent)">Fehler beim Laden der Daten:<br>${err}</p>`;
+    `<p style="color:#D4001A">Fehler beim Laden der Daten:<br>${err}</p>`;
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────────
 // NAVIGATION
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────────
 document.querySelectorAll('.nav-item').forEach(el => {
   el.addEventListener('click', () => {
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -605,14 +636,13 @@ function renderPage(page) {
       case 'stac':       renderStac();      break;
       case 'lizenzen':   renderLizenzen();  break;
       case 'themen':     renderThemen();    break;
-      case 'plattform':  renderPlattform(); break;
     }
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────────
 // HELPERS
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────────
 function latestDate(data) {
   const dates = [...new Set(data.map(r => r.snapshot_date))].sort();
   return dates[dates.length - 1];
@@ -654,9 +684,9 @@ function barTrace(x, y, name, color) {
   return { x, y, name, type: 'bar', marker: { color } };
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────────
 // DASHBOARD
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────────
 function renderDashboard() {
   const latestD  = latestDate(packages);
   const prevD    = prevDate(packages);
@@ -699,15 +729,16 @@ function renderDashboard() {
   ], plotDefaults({ yaxis: { rangemode: 'tozero' } }), { responsive: true, displayModeBar: false });
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────────
 // ABTEILUNG
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────────
 function renderAbteilung() {
   const latestD = latestDate(packages);
   const latest  = byDate(packages, latestD);
-  const grouped = groupCount(latest, 'maintainer');
+  const grouped = groupCount(latest, 'maintainer_email');
 
-  const label = g => g[0] || '(leer)';
+  // Shorten labels
+  const label  = g => (g[0] || '').replace('@bafu.admin.ch','').replace('@','') || '(leer)';
 
   // Bar chart
   Plotly.newPlot('chart-abt-bar', [
@@ -720,7 +751,7 @@ function renderAbteilung() {
   const dates = [...new Set(packages.map(r=>r.snapshot_date))].sort();
   const traces = top5.map((abt, i) => ({
     x: dates,
-    y: dates.map(d => byDate(packages, d).filter(r=>r.maintainer===abt).length),
+    y: dates.map(d => byDate(packages, d).filter(r=>r.maintainer_email===abt).length),
     name: label([abt]),
     type: 'scatter', mode: 'lines+markers',
     line: { color: COLORS[i], width: 2 },
@@ -730,53 +761,23 @@ function renderAbteilung() {
     plotDefaults({ legend: { orientation: 'h', y: -0.3 } }),
     { responsive: true, displayModeBar: false });
 
-  // Table (Zeilen aufklappbar → zeigt Packages der Abteilung)
+  // Table
+  const latestRes   = byDate(resources, latestDate(resources));
+  const resByPkg    = buildResourcesByPackage(latestRes);
   const tbl = document.getElementById('table-abt');
-  tbl.innerHTML = `<tr><th></th><th>Abteilung</th><th>E-Mail</th><th>Packages</th></tr>` +
-    grouped.map((g, i) => {
-      const pkgs  = latest.filter(r=>r.maintainer===g[0]);
-      const email = pkgs[0]?.maintainer_email || '';
-      const rowsHtml = pkgs
-        .sort((a,b) => (a.title_de||'').localeCompare(b.title_de||''))
-        .map(p => `<tr class="pkg-row" data-url="https://opendata.swiss/de/dataset/${encodeURIComponent(p.package_name)}"><td>${p.title_de || p.package_name}</td><td>${p.package_name}</td><td>${p.modified || ''}</td></tr>`)
-        .join('');
-      return `
-        <tr class="abt-row" data-target="abt-detail-${i}">
-          <td class="abt-toggle">▸</td>
-          <td>${g[0]}</td>
-          <td>${email}</td>
-          <td><span class="badge">${g[1]}</span></td>
-        </tr>
-        <tr id="abt-detail-${i}" class="abt-detail" style="display:none;">
-          <td></td>
-          <td colspan="3">
-            <table class="data-table data-table-nested ob-table ob-table-sm">
-              <tr><th>Titel</th><th>package_name</th><th>Geändert</th></tr>
-              ${rowsHtml}
-            </table>
-          </td>
-        </tr>`;
+  tbl.innerHTML = `<tr><th>Abteilung</th><th>E-Mail</th><th>Packages</th><th>Datentypen</th></tr>` +
+    grouped.map(g => {
+      const pkgs  = latest.filter(r=>r.maintainer_email===g[0]);
+      const abt   = pkgs[0]?.maintainer || g[0];
+      const types = getTypesForDepartment(g[0], latest, resByPkg);
+      const badges = typeBadgesHtml(types, latest, resByPkg, g[0]);
+      return `<tr><td>${abt}</td><td>${g[0]}</td><td><span class="badge">${g[1]}</span></td><td>${badges}</td></tr>`;
     }).join('');
-
-  tbl.querySelectorAll('.abt-row').forEach(row => {
-    row.addEventListener('click', () => {
-      const detail = document.getElementById(row.dataset.target);
-      const open = detail.style.display !== 'none';
-      detail.style.display = open ? 'none' : 'table-row';
-      row.querySelector('.abt-toggle').textContent = open ? '▸' : '▾';
-    });
-  });
-
-  tbl.querySelectorAll('.pkg-row').forEach(row => {
-    row.addEventListener('click', () => {
-      window.open(row.dataset.url, '_blank', 'noopener');
-    });
-  });
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────────
 // FORMATE
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────────
 function renderFormate() {
   const latestD = latestDate(resources);
   const latest  = byDate(resources, latestD);
@@ -800,9 +801,9 @@ function renderFormate() {
     { responsive: true, displayModeBar: false });
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────────
 // STAC
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────────
 function renderStac() {
   const latestD = latestDate(resources);
   const latest  = byDate(resources, latestD);
@@ -838,12 +839,12 @@ function renderStac() {
   { responsive: true, displayModeBar: false });
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────────
 // LIZENZEN & AKTUALITÄT
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────────
 function renderLizenzen() {
-  const latestD = latestDate(resources);
-  const latest  = byDate(resources, latestD);
+  const latestD = latestDate(packages);
+  const latest  = byDate(packages, latestD);
 
   // Lizenz-Pie
   const licGroups = groupCount(latest, 'license').slice(0, 8);
@@ -865,68 +866,26 @@ function renderLizenzen() {
   });
   const ySorted = Object.entries(years).sort((a,b)=>a[0].localeCompare(b[0]));
   Plotly.newPlot('chart-modified-bar', [
-    barTrace(ySorted.map(y=>y[0]), ySorted.map(y=>y[1]), 'Ressourcen', COLORS[0])
+    barTrace(ySorted.map(y=>y[0]), ySorted.map(y=>y[1]), 'Packages', COLORS[0])
   ], plotDefaults({ xaxis: { type: 'category' } }),
   { responsive: true, displayModeBar: false });
 
   // Lizenzen über Zeit (top 5)
   const top5lic = licGroups.slice(0, 5).map(g => g[0]);
-  const dates   = [...new Set(resources.map(r=>r.snapshot_date))].sort();
+  const dates   = [...new Set(packages.map(r=>r.snapshot_date))].sort();
   const traces  = top5lic.map((lic, i) => lineTrace(
     dates,
-    dates.map(d => byDate(resources,d).filter(r=>r.license===lic).length),
+    dates.map(d => byDate(packages,d).filter(r=>r.license===lic).length),
     lic || '(leer)', COLORS[i]
   ));
   Plotly.newPlot('chart-lic-line', traces,
     plotDefaults({ legend: { orientation: 'h', y: -0.3 } }),
     { responsive: true, displayModeBar: false });
-
-  // Table (Zeilen aufklappbar → zeigt Ressourcen der Lizenz)
-  const licGroupsAll = groupCount(latest, 'license');
-  const tbl = document.getElementById('table-lic');
-  tbl.innerHTML = `<tr><th></th><th>Lizenz</th><th>Ressourcen</th></tr>` +
-    licGroupsAll.map((g, i) => {
-      const res = latest.filter(r => r.license === g[0]);
-      const rowsHtml = res
-        .sort((a,b) => (a.title_de||'').localeCompare(b.title_de||''))
-        .map(r => `<tr class="pkg-row" data-url="https://opendata.swiss/de/dataset/${encodeURIComponent(r.package_name)}"><td>${r.title_de || r.resource_id}</td><td>${r.package_name}</td><td>${r.format || ''}</td></tr>`)
-        .join('');
-      return `
-        <tr class="abt-row" data-target="lic-detail-${i}">
-          <td class="abt-toggle">▸</td>
-          <td>${g[0] || '(leer)'}</td>
-          <td><span class="badge">${g[1]}</span></td>
-        </tr>
-        <tr id="lic-detail-${i}" class="abt-detail" style="display:none;">
-          <td></td>
-          <td colspan="2">
-            <table class="data-table data-table-nested ob-table ob-table-sm">
-              <tr><th>Titel</th><th>package_name</th><th>Format</th></tr>
-              ${rowsHtml}
-            </table>
-          </td>
-        </tr>`;
-    }).join('');
-
-  tbl.querySelectorAll('.abt-row').forEach(row => {
-    row.addEventListener('click', () => {
-      const detail = document.getElementById(row.dataset.target);
-      const open = detail.style.display !== 'none';
-      detail.style.display = open ? 'none' : 'table-row';
-      row.querySelector('.abt-toggle').textContent = open ? '▸' : '▾';
-    });
-  });
-
-  tbl.querySelectorAll('.pkg-row').forEach(row => {
-    row.addEventListener('click', () => {
-      window.open(row.dataset.url, '_blank', 'noopener');
-    });
-  });
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────────
 // THEMEN
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────────
 function renderThemen() {
   const latestD = latestDate(packages);
   const latest  = byDate(packages, latestD);
@@ -983,91 +942,9 @@ function renderThemen() {
   { responsive: true, displayModeBar: false });
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// PLATTFORM
-// ─────────────────────────────────────────────────────────────────────────────
-function getPlatform(url) {
-  if (!url) return '(leer)';
-  try {
-    return new URL(url).hostname || '(leer)';
-  } catch (e) {
-    const match = url.match(/^[a-z]+:\/\/([^\/]+)/i);
-    return match ? match[1] : '(leer)';
-  }
-}
-
-function renderPlattform() {
-  const latestD = latestDate(resources);
-  const latest  = byDate(resources, latestD);
-  const platOf  = r => getPlatform(r.url);
-
-  const platCount = {};
-  latest.forEach(r => { const p = platOf(r); platCount[p] = (platCount[p] || 0) + 1; });
-  const grouped = Object.entries(platCount).sort((a,b) => b[1]-a[1]);
-
-  // Bar chart
-  Plotly.newPlot('chart-plat-bar', [
-    barTrace(grouped.map(g=>g[0]), grouped.map(g=>g[1]), 'Ressourcen', COLORS[0])
-  ], plotDefaults({ margin: { t:10,r:10,b:120,l:40 }, xaxis: { tickangle: -40 } }),
-  { responsive: true, displayModeBar: false });
-
-  // Top-6 line over time
-  const top6  = grouped.slice(0, 6).map(g => g[0]);
-  const dates = [...new Set(resources.map(r=>r.snapshot_date))].sort();
-  const traces = top6.map((plat, i) => lineTrace(
-    dates,
-    dates.map(d => byDate(resources, d).filter(r => platOf(r) === plat).length),
-    plat, COLORS[i]
-  ));
-  Plotly.newPlot('chart-plat-line', traces,
-    plotDefaults({ legend: { orientation: 'h', y: -0.3 } }),
-    { responsive: true, displayModeBar: false });
-
-  // Table (Zeilen aufklappbar → zeigt Ressourcen der Plattform)
-  const tbl = document.getElementById('table-plat');
-  tbl.innerHTML = `<tr><th></th><th>Plattform</th><th>Ressourcen</th></tr>` +
-    grouped.map((g, i) => {
-      const res = latest.filter(r => platOf(r) === g[0]);
-      const rowsHtml = res
-        .sort((a,b) => (a.title_de||'').localeCompare(b.title_de||''))
-        .map(r => `<tr class="pkg-row" data-url="https://opendata.swiss/de/dataset/${encodeURIComponent(r.package_name)}"><td>${r.title_de || r.resource_id}</td><td>${r.package_name}</td><td>${r.format || ''}</td></tr>`)
-        .join('');
-      return `
-        <tr class="abt-row" data-target="plat-detail-${i}">
-          <td class="abt-toggle">▸</td>
-          <td>${g[0]}</td>
-          <td><span class="badge">${g[1]}</span></td>
-        </tr>
-        <tr id="plat-detail-${i}" class="abt-detail" style="display:none;">
-          <td></td>
-          <td colspan="2">
-            <table class="data-table data-table-nested ob-table ob-table-sm">
-              <tr><th>Titel</th><th>package_name</th><th>Format</th></tr>
-              ${rowsHtml}
-            </table>
-          </td>
-        </tr>`;
-    }).join('');
-
-  tbl.querySelectorAll('.abt-row').forEach(row => {
-    row.addEventListener('click', () => {
-      const detail = document.getElementById(row.dataset.target);
-      const open = detail.style.display !== 'none';
-      detail.style.display = open ? 'none' : 'table-row';
-      row.querySelector('.abt-toggle').textContent = open ? '▸' : '▾';
-    });
-  });
-
-  tbl.querySelectorAll('.pkg-row').forEach(row => {
-    row.addEventListener('click', () => {
-      window.open(row.dataset.url, '_blank', 'noopener');
-    });
-  });
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────────
 // UTILITY
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────────
 function setText(id, val) {
   const el = document.getElementById(id);
   if (el) el.textContent = val;
