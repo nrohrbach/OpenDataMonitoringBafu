@@ -51,16 +51,15 @@
       box-shadow: var(--ob-shadow);
     }
     .header-logo {
-      width: 48px;
       height: 48px;
-      background: var(--ob-color-white);
-      border-radius: var(--ob-radius);
       display: flex;
       align-items: center;
-      justify-content: center;
       flex-shrink: 0;
     }
-    .header-logo svg { width: 36px; height: 36px; }
+    .header-logo img {
+      height: 48px;
+      width: auto;
+    }
     header h1 { font-size: 1.35rem; font-weight: 700; letter-spacing: 0.01em; }
     header p  { font-size: 0.82rem; opacity: 0.85; margin-top: 2px; }
 
@@ -280,12 +279,7 @@
 <!-- Header -->
 <header>
   <div class="header-logo">
-    <!-- Swiss cross SVG -->
-    <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="36" height="36" fill="#D4001A"/>
-      <rect x="14" y="6" width="8" height="24" fill="white"/>
-      <rect x="6" y="14" width="24" height="8" fill="white"/>
-    </svg>
+    <img src="vendor/oblique/images/logo-white.svg" alt="Schweizerische Eidgenossenschaft" />
   </div>
   <div>
     <h1>OGD Monitoring BAFU</h1>
@@ -402,7 +396,7 @@
       </div>
     </div>
 
-    <!-- ── STAC ─────────────────────────────────────────────── -->
+    <!-- ── STAC ───────────────────────────────────────────── -->
     <div id="page-stac" class="page">
       <div class="page-title">STAC-Geodaten</div>
       <div class="page-subtitle">Ressourcen mit STAC-Browser-Link (data.geo.admin.ch/browser)</div>
@@ -436,7 +430,7 @@
       </div>
     </div>
 
-    <!-- ── LIZENZEN & AKTUALITÄT ───────────────────────────────────── -->
+    <!-- ── LIZENZEN & AKTUALITÄT ────────────────────────────────────── -->
     <div id="page-lizenzen" class="page">
       <div class="page-title">Lizenzen &amp; Aktualität</div>
       <div class="page-subtitle">Lizenzverteilung und Aktualität der Packages (letztes Änderungsdatum)</div>
@@ -456,7 +450,7 @@
       </div>
     </div>
 
-    <!-- ── THEMEN ─────────────────────────────────────────────── -->
+    <!-- ── THEMEN ───────────────────────────────────────────── -->
     <div id="page-themen" class="page">
       <div class="page-title">Themen</div>
       <div class="page-subtitle">Keywords der Packages, gematcht gegen BAFU-Themenbereiche</div>
@@ -480,9 +474,9 @@
 </div>
 
 <script>
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 // CONSTANTS
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 const COLORS = [
   '#006F73','#D4001A','#005457','#F5A623','#4A90D9',
   '#7B4F9E','#2ECC71','#E67E22','#1ABC9C','#E74C3C',
@@ -583,9 +577,9 @@ const BAFU_THEMEN = {
   'Georeferenz':['geodaten','gis','karte','wms','wmts','shapefile']
 };
 
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 // DATA LOADING
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 let packages = [], resources = [];
 
 function parseCsv(url) {
@@ -611,9 +605,9 @@ Promise.all([
     `<p style="color:#D4001A">Fehler beim Laden der Daten:<br>${err}</p>`;
 });
 
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 // NAVIGATION
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 document.querySelectorAll('.nav-item').forEach(el => {
   el.addEventListener('click', () => {
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -640,9 +634,9 @@ function renderPage(page) {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 // HELPERS
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 function latestDate(data) {
   const dates = [...new Set(data.map(r => r.snapshot_date))].sort();
   return dates[dates.length - 1];
@@ -684,9 +678,9 @@ function barTrace(x, y, name, color) {
   return { x, y, name, type: 'bar', marker: { color } };
 }
 
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 // DASHBOARD
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 function renderDashboard() {
   const latestD  = latestDate(packages);
   const prevD    = prevDate(packages);
@@ -729,9 +723,9 @@ function renderDashboard() {
   ], plotDefaults({ yaxis: { rangemode: 'tozero' } }), { responsive: true, displayModeBar: false });
 }
 
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 // ABTEILUNG
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 function renderAbteilung() {
   const latestD = latestDate(packages);
   const latest  = byDate(packages, latestD);
@@ -775,9 +769,9 @@ function renderAbteilung() {
     }).join('');
 }
 
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 // FORMATE
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 function renderFormate() {
   const latestD = latestDate(resources);
   const latest  = byDate(resources, latestD);
@@ -801,9 +795,9 @@ function renderFormate() {
     { responsive: true, displayModeBar: false });
 }
 
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 // STAC
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 function renderStac() {
   const latestD = latestDate(resources);
   const latest  = byDate(resources, latestD);
@@ -839,9 +833,9 @@ function renderStac() {
   { responsive: true, displayModeBar: false });
 }
 
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 // LIZENZEN & AKTUALITÄT
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 function renderLizenzen() {
   const latestD = latestDate(packages);
   const latest  = byDate(packages, latestD);
@@ -883,9 +877,9 @@ function renderLizenzen() {
     { responsive: true, displayModeBar: false });
 }
 
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 // THEMEN
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 function renderThemen() {
   const latestD = latestDate(packages);
   const latest  = byDate(packages, latestD);
@@ -942,9 +936,9 @@ function renderThemen() {
   { responsive: true, displayModeBar: false });
 }
 
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 // UTILITY
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 function setText(id, val) {
   const el = document.getElementById(id);
   if (el) el.textContent = val;
