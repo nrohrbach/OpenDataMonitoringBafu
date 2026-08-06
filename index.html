@@ -245,6 +245,18 @@
     }
     .data-table tr:hover td { background: var(--ob-color-primary-light); }
 
+    /* ─── TYPE BADGE ──────────────────────────────────────────── */
+    .type-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 500;
+      color: white;
+      margin: 2px 2px 2px 0;
+      white-space: nowrap;
+    }
+
     /* ─── BADGE ───────────────────────────────────────────────── */
     .badge {
       display: inline-block;
@@ -486,6 +498,76 @@ const PLOT_LAYOUT_BASE = {
   legend: { bgcolor: 'rgba(0,0,0,0)' }
 };
 
+const TYPE_RULES = [
+  {
+    id: 'geodaten', label: 'Geodaten', color: '#2a78d6',
+    detect: (pkg, res) => res.some(r =>
+      (r.url && (r.url.includes('geocat.ch') || r.url.includes('geo.admin.ch'))) ||
+      r.has_stac === 'True' ||
+      ['WMS','WMTS','WFS','GPKG','GeoJSON','SHP','KML','GeoTIFF']
+        .some(f => r.format && r.format.toUpperCase().includes(f.toUpperCase()))
+    )
+  },
+  {
+    id: 'tabellendaten', label: 'Tabellendaten', color: '#008300',
+    detect: (pkg, res) => res.some(r =>
+      ['CSV','XLSX','XLS','ODS','JSON','PARQUET']
+        .some(f => r.format && r.format.toUpperCase().includes(f.toUpperCase()))
+    )
+  },
+  {
+    id: 'webservice', label: 'Webservice', color: '#eda100',
+    detect: (pkg, res) => res.some(r =>
+      r.is_service === 'True' ||
+      ['API','REST','SPARQL','OGC','SERVICE']
+        .some(f => r.format && r.format.toUpperCase().includes(f.toUpperCase()))
+    )
+  },
+  {
+    id: 'dokument', label: 'Dokument', color: '#4a3aa7',
+    detect: (pkg, res) => res.some(r =>
+      ['PDF','DOCX','DOC','HTML','XML']
+        .some(f => r.format && r.format.toUpperCase().includes(f.toUpperCase()))
+    )
+  },
+  {
+    id: 'unbekannt', label: '?', color: '#898781',
+    detect: (pkg, res) => res.length === 0
+  }
+];
+
+function buildResourcesByPackage(res) {
+  const map = {};
+  res.forEach(r => {
+    if (!map[r.package_name]) map[r.package_name] = [];
+    map[r.package_name].push(r);
+  });
+  return map;
+}
+
+function getTypesForDepartment(email, pkgs, resByPkg) {
+  const typeSet = new Set();
+  pkgs.filter(p => p.maintainer_email === email).forEach(pkg => {
+    const res = resByPkg[pkg.package_name] || [];
+    TYPE_RULES.forEach(rule => { if (rule.detect(pkg, res)) typeSet.add(rule.id); });
+  });
+  return [...typeSet];
+}
+
+function typeBadgesHtml(typeIds, pkgs, resByPkg, email) {
+  return typeIds.map(id => {
+    const rule = TYPE_RULES.find(r => r.id === id);
+    const formats = [];
+    pkgs.filter(p => p.maintainer_email === email).forEach(pkg => {
+      (resByPkg[pkg.package_name] || []).forEach(r => {
+        if (r.format && !formats.includes(r.format)) formats.push(r.format);
+      });
+    });
+    const tip = formats.length ? 'Formate: ' + formats.slice(0, 5).join(', ') + (formats.length > 5 ? ' …' : '') : '';
+    return `<span class="type-badge" style="background:${rule.color}"${tip ? ` title="${tip}"` : ''}>${rule.label}</span>`;
+  }).join('');
+}
+
 const BAFU_THEMEN = {
   'Wald':       ['wald','forst','tree','bäume','waldbrand'],
   'Wasser':     ['wasser','fluss','see','grundwasser','gewässer','hydrologie'],
@@ -680,12 +762,16 @@ function renderAbteilung() {
     { responsive: true, displayModeBar: false });
 
   // Table
+  const latestRes   = byDate(resources, latestDate(resources));
+  const resByPkg    = buildResourcesByPackage(latestRes);
   const tbl = document.getElementById('table-abt');
-  tbl.innerHTML = `<tr><th>Abteilung</th><th>E-Mail</th><th>Packages</th></tr>` +
+  tbl.innerHTML = `<tr><th>Abteilung</th><th>E-Mail</th><th>Packages</th><th>Datentypen</th></tr>` +
     grouped.map(g => {
-      const pkgs = latest.filter(r=>r.maintainer_email===g[0]);
-      const abt  = pkgs[0]?.maintainer || g[0];
-      return `<tr><td>${abt}</td><td>${g[0]}</td><td><span class="badge">${g[1]}</span></td></tr>`;
+      const pkgs  = latest.filter(r=>r.maintainer_email===g[0]);
+      const abt   = pkgs[0]?.maintainer || g[0];
+      const types = getTypesForDepartment(g[0], latest, resByPkg);
+      const badges = typeBadgesHtml(types, latest, resByPkg, g[0]);
+      return `<tr><td>${abt}</td><td>${g[0]}</td><td><span class="badge">${g[1]}</span></td><td>${badges}</td></tr>`;
     }).join('');
 }
 
