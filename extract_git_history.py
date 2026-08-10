@@ -4,7 +4,7 @@ import pandas as pd
 
 
 def extract_history(repo, filename):
-    commits = list(reversed(list(repo.iter_commits("main", paths=[filename]))))
+    commits = list(reversed(list(repo.iter_commits("HEAD", paths=[filename]))))
     if not commits:
         raise SystemExit(f"Keine Commits für {filename} gefunden.")
     all_rows = []
