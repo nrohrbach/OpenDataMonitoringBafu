@@ -32,8 +32,8 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git add ogd_packages.csv ogd_resources.csv ogd_packages_history.csv ogd_resources_history.csv
-          git commit -m "Update: $(date +'%Y-%m-%d')" || echo "Keine Änderungen"
+          git add ogd_packages.csv ogd_resources.csv
+          git diff --cached --quiet || git commit -m "Update: $(date +'%Y-%m-%d')"
           git push
 
       - name: Git-History rekonstruieren
@@ -44,6 +44,8 @@ jobs:
           mkdir -p _deploy
           cp index.html _deploy/
           cp -r vendor _deploy/
+          cp ogd_packages_history.csv _deploy/
+          cp ogd_resources_history.csv _deploy/
 
       - name: GitHub Pages deployen
         uses: peaceiris/actions-gh-pages@v3
