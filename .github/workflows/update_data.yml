@@ -34,6 +34,7 @@ jobs:
           git config user.email "actions@github.com"
           git add ogd_packages.csv ogd_resources.csv
           git diff --cached --quiet || git commit -m "Update: $(date +'%Y-%m-%d')"
+          git pull --rebase origin main
           git push
 
       - name: Git-History rekonstruieren
