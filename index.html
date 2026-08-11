@@ -700,10 +700,11 @@ function renderDashboard() {
   ], plotDefaults({ yaxis: { rangemode: 'tozero' } }), { responsive: true, displayModeBar: false });
 
   // STAC Trend
-  const allDates = [...new Set(resources.map(r=>r.snapshot_date))].sort();
-  const stacSeries = allDates.map(d => byDate(resources,d).filter(r=>r.has_stac==='true').length);
+  const allResDatesSorted = [...new Set(resources.map(r=>r.snapshot_date).filter(Boolean))].sort();
+  const allResDates = allResDatesSorted.length > 0 ? allResDatesSorted : [FALLBACK_DATE];
+  const stacSeries = allResDates.map(d => byDate(resources,d).filter(r=>r.has_stac==='true').length);
   Plotly.newPlot('chart-dashboard-stac-trend', [
-    lineTrace(allDates, stacSeries, 'STAC', COLORS[0])
+    lineTrace(allResDates, stacSeries, 'STAC', COLORS[0])
   ], plotDefaults({ yaxis: { rangemode: 'tozero' } }), { responsive: true, displayModeBar: false });
 }
 
@@ -725,7 +726,8 @@ function renderAbteilung() {
 
   // Top-5 line over time
   const top5 = grouped.slice(0, 5).map(g => g[0]);
-  const dates = [...new Set(packages.map(r=>r.snapshot_date))].sort();
+  const _pkgDatesSorted = [...new Set(packages.map(r=>r.snapshot_date).filter(Boolean))].sort();
+  const dates = _pkgDatesSorted.length > 0 ? _pkgDatesSorted : [FALLBACK_DATE];
   const traces = top5.map((abt, i) => ({
     x: dates,
     y: dates.map(d => byDate(packages, d).filter(r=>r.maintainer===abt).length),
@@ -797,7 +799,8 @@ function renderFormate() {
 
   // Top-6 line
   const top6  = grouped.slice(0, 6).map(g => g[0]);
-  const dates = [...new Set(resources.map(r=>r.snapshot_date))].sort();
+  const _resDates = [...new Set(resources.map(r=>r.snapshot_date).filter(Boolean))].sort();
+  const dates = _resDates.length > 0 ? _resDates : [FALLBACK_DATE];
   const traces = top6.map((fmt, i) => lineTrace(
     dates,
     dates.map(d => byDate(resources, d).filter(r=>r.format===fmt).length),
@@ -940,7 +943,8 @@ function renderStac() {
   { responsive: true, displayModeBar: false });
 
   // Line over time
-  const dates     = [...new Set(resources.map(r=>r.snapshot_date))].sort();
+  const _dqDates = [...new Set(resources.map(r=>r.snapshot_date).filter(Boolean))].sort();
+  const dates     = _dqDates.length > 0 ? _dqDates : [FALLBACK_DATE];
   const stacVals  = dates.map(d => byDate(resources,d).filter(r=>r.has_stac==='true').length);
   const noStacVals= dates.map(d => byDate(resources,d).filter(r=>r.has_stac!=='true').length);
   Plotly.newPlot('chart-stac-line', [
@@ -983,7 +987,8 @@ function renderLizenzen() {
 
   // Lizenzen über Zeit (top 5)
   const top5lic = licGroups.slice(0, 5).map(g => g[0]);
-  const dates   = [...new Set(resources.map(r=>r.snapshot_date))].sort();
+  const _licDates = [...new Set(resources.map(r=>r.snapshot_date).filter(Boolean))].sort();
+  const dates   = _licDates.length > 0 ? _licDates : [FALLBACK_DATE];
   const traces  = top5lic.map((lic, i) => lineTrace(
     dates,
     dates.map(d => byDate(resources,d).filter(r=>r.license===lic).length),
@@ -1064,7 +1069,8 @@ function renderThemen() {
 
   // Themen über Zeit (top 6)
   const top6themes = themenSorted.slice(0, 6).map(t => t[0]);
-  const dates      = [...new Set(packages.map(r=>r.snapshot_date))].sort();
+  const _themenDates = [...new Set(packages.map(r=>r.snapshot_date).filter(Boolean))].sort();
+  const dates      = _themenDates.length > 0 ? _themenDates : [FALLBACK_DATE];
   const traces     = top6themes.map((theme, i) => lineTrace(
     dates,
     dates.map(d => {
@@ -1125,7 +1131,8 @@ function renderPlattform() {
 
   // Top-6 line over time
   const top6  = grouped.slice(0, 6).map(g => g[0]);
-  const dates = [...new Set(resources.map(r=>r.snapshot_date))].sort();
+  const _platDates = [...new Set(resources.map(r=>r.snapshot_date).filter(Boolean))].sort();
+  const dates = _platDates.length > 0 ? _platDates : [FALLBACK_DATE];
   const traces = top6.map((plat, i) => lineTrace(
     dates,
     dates.map(d => byDate(resources, d).filter(r => platOf(r) === plat).length),
