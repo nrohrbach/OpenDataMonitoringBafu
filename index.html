@@ -813,6 +813,13 @@ function renderFormate() {
     }
   });
 
+  // Format-Mapping muss VOR der forEach-Schleife stehen
+  const FORMAT_MAP = {
+    'WMS': 'Geodaten', 'WMTS': 'Geodaten',
+    'SPARQL': 'LinkedData'
+  };
+  const mapFmt = fmt => FORMAT_MAP[fmt] || fmt;
+
   // Für jeden Maintainer: welche Packages hat er, welche Formate haben diese Resources?
   const maintainerMap = {}; // maintainer → { email, packages: { pkg_name → Set(formats) } }
   latest.forEach(r => {
@@ -832,12 +839,6 @@ function renderFormate() {
       return { maintainer: m, email: data.email, pkgCount: pkgList.length, formats: allFormats, pkgList };
     })
     .sort((a, b) => b.pkgCount - a.pkgCount);
-
-  const FORMAT_MAP = {
-    'WMS': 'Geodaten', 'WMTS': 'Geodaten',
-    'SPARQL': 'LinkedData'
-  };
-  const mapFmt = fmt => FORMAT_MAP[fmt] || fmt;
 
   const BADGE_COLORS = {
     'Geodaten':   '#1565c0',
