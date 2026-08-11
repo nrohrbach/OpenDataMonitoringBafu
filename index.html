@@ -614,22 +614,29 @@ function renderPage(page) {
 // ─────────────────────────────────────────────────────────────────────────────────
 // HELPERS
 // ─────────────────────────────────────────────────────────────────────────────────
+const FALLBACK_DATE = 'today';
+
 function latestDate(data) {
-  const dates = [...new Set(data.map(r => r.snapshot_date))].sort();
-  return dates[dates.length - 1];
+  const dates = [...new Set(data.map(r => r.snapshot_date).filter(Boolean))].sort();
+  return dates.length > 0 ? dates[dates.length - 1] : FALLBACK_DATE;
 }
 
 function prevDate(data) {
-  const dates = [...new Set(data.map(r => r.snapshot_date))].sort();
+  const dates = [...new Set(data.map(r => r.snapshot_date).filter(Boolean))].sort();
   return dates.length > 1 ? dates[dates.length - 2] : null;
 }
 
 function byDate(data, date) {
+  if (date === FALLBACK_DATE) return data;
   return data.filter(r => r.snapshot_date === date);
 }
 
 function countByDate(data, field) {
-  const dates = [...new Set(data.map(r => r.snapshot_date))].sort();
+  const dates = [...new Set(data.map(r => r.snapshot_date).filter(Boolean))].sort();
+  if (dates.length === 0) {
+    // Keine History: Einzelpunkt mit aktuellem Stand
+    return [{ date: 'aktuell', count: data.length }];
+  }
   return dates.map(d => ({
     date: d,
     count: byDate(data, d).length
