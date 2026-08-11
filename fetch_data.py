@@ -6,19 +6,29 @@ ORG = "bundesamt-fur-umwelt-bafu"
 
 
 def get_all_packages():
+    """Lädt alle Packages inkl. Resources in einem einzigen paginierten API-Call.
+    package_search gibt bei include_private=False bereits alle Resources mit zurück —
+    kein separater package_show-Call pro Package nötig.
+    """
     packages = []
     start = 0
-    rows = 500
+    rows = 100  # kleinere Batches = stabilere Antworten bei grossen Payloads
     while True:
         resp = requests.get(
             f"{CKAN_BASE}/package_search",
-            params={"fq": f"organization:{ORG}", "rows": rows, "start": start},
-            timeout=60,
+            params={
+                "fq": f"organization:{ORG}",
+                "rows": rows,
+                "start": start,
+                "include_private": False,
+            },
+            timeout=120,
         )
         resp.raise_for_status()
         result = resp.json()["result"]
         batch = result["results"]
         packages.extend(batch)
+        print(f"  {start + len(batch)}/{result['count']} Packages geladen...")
         if start + rows >= result["count"]:
             break
         start += rows
@@ -38,7 +48,7 @@ def get_multilang(field, lang="de"):
 
 
 def fetch_and_write():
-    print("Abrufen aller BAFU-Packages...")
+    print("Abrufen aller BAFU-Packages (ohne package_show-Loop)...")
     packages = get_all_packages()
     print(f"  {len(packages)} Packages gefunden.")
 
@@ -48,18 +58,9 @@ def fetch_and_write():
     for pkg in packages:
         name = pkg.get("name", "")
 
-        # Package details
-        resp = requests.get(
-            f"{CKAN_BASE}/package_show",
-            params={"id": name},
-            timeout=60,
-        )
-        resp.raise_for_status()
-        detail = resp.json().get("result", pkg)
-
-        # Keywords
+        # Keywords — direkt aus package_search-Resultat
         keywords_de = ""
-        tags = detail.get("keywords", {})
+        tags = pkg.get("keywords", {})
         if isinstance(tags, dict):
             kw_list = tags.get("de", tags.get("en", []))
             keywords_de = ",".join(kw_list)
@@ -68,16 +69,16 @@ def fetch_and_write():
 
         pkg_rows.append({
             "package_name": name,
-            "title_de": get_multilang(detail.get("title", ""), "de"),
-            "maintainer": detail.get("maintainer", ""),
-            "maintainer_email": detail.get("maintainer_email", ""),
-            "issued": detail.get("issued", ""),
-            "modified": detail.get("modified", ""),
-            "license": extract_license(detail.get("license_url", "")),
+            "title_de": get_multilang(pkg.get("title", ""), "de"),
+            "maintainer": pkg.get("maintainer", ""),
+            "maintainer_email": pkg.get("maintainer_email", ""),
+            "issued": pkg.get("issued", ""),
+            "modified": pkg.get("modified", ""),
+            "license": extract_license(pkg.get("license_url", "")),
             "keywords_de": keywords_de,
         })
 
-        for resource in detail.get("resources", []):
+        for resource in pkg.get("resources", []):
             url = resource.get("url", "")
             fmt = resource.get("format", "")
             res_rows.append({
