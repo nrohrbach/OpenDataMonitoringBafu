@@ -6,29 +6,19 @@ ORG = "bundesamt-fur-umwelt-bafu"
 
 
 def get_all_packages():
-    """Lädt alle Packages inkl. Resources in einem einzigen paginierten API-Call.
-    package_search gibt bei include_private=False bereits alle Resources mit zurück —
-    kein separater package_show-Call pro Package nötig.
-    """
     packages = []
     start = 0
-    rows = 100  # kleinere Batches = stabilere Antworten bei grossen Payloads
+    rows = 500
     while True:
         resp = requests.get(
             f"{CKAN_BASE}/package_search",
-            params={
-                "fq": f"organization:{ORG}",
-                "rows": rows,
-                "start": start,
-                "include_private": False,
-            },
-            timeout=120,
+            params={"fq": f"organization:{ORG}", "rows": rows, "start": start},
+            timeout=60,
         )
         resp.raise_for_status()
         result = resp.json()["result"]
         batch = result["results"]
         packages.extend(batch)
-        print(f"  {start + len(batch)}/{result['count']} Packages geladen...")
         if start + rows >= result["count"]:
             break
         start += rows
@@ -48,7 +38,7 @@ def get_multilang(field, lang="de"):
 
 
 def fetch_and_write():
-    print("Abrufen aller BAFU-Packages (ohne package_show-Loop)...")
+    print("Abrufen aller BAFU-Packages...")
     packages = get_all_packages()
     print(f"  {len(packages)} Packages gefunden.")
 
@@ -58,27 +48,53 @@ def fetch_and_write():
     for pkg in packages:
         name = pkg.get("name", "")
 
-        # Keywords — direkt aus package_search-Resultat
+        # Package details
+        resp = requests.get(
+            f"{CKAN_BASE}/package_show",
+            params={"id": name},
+            timeout=60,
+        )
+        resp.raise_for_status()
+        detail = resp.json().get("result", pkg)
+
+        # Keywords
         keywords_de = ""
-        tags = pkg.get("keywords", {})
+        tags = detail.get("keywords", {})
         if isinstance(tags, dict):
             kw_list = tags.get("de", tags.get("en", []))
             keywords_de = ",".join(kw_list)
         elif isinstance(tags, list):
             keywords_de = ",".join(t.get("name", "") for t in tags)
 
+        # maintainer_email: direktes Feld, Fallback auf contact_points (opendata.swiss-Standard)
+        maintainer_email = detail.get("maintainer_email", "")
+        if not maintainer_email:
+            for cp in detail.get("contact_points", []):
+                email = cp.get("email", "")
+                if email:
+                    maintainer_email = email
+                    break
+
+        maintainer = detail.get("maintainer", "")
+        if not maintainer:
+            for cp in detail.get("contact_points", []):
+                name_cp = cp.get("name", "")
+                if name_cp:
+                    maintainer = get_multilang(name_cp, "de") if isinstance(name_cp, dict) else name_cp
+                    break
+
         pkg_rows.append({
             "package_name": name,
-            "title_de": get_multilang(pkg.get("title", ""), "de"),
-            "maintainer": pkg.get("maintainer", ""),
-            "maintainer_email": pkg.get("maintainer_email", ""),
-            "issued": pkg.get("issued", ""),
-            "modified": pkg.get("modified", ""),
-            "license": extract_license(pkg.get("license_url", "")),
+            "title_de": get_multilang(detail.get("title", ""), "de"),
+            "maintainer": maintainer,
+            "maintainer_email": maintainer_email,
+            "issued": detail.get("issued", ""),
+            "modified": detail.get("modified", ""),
+            "license": extract_license(detail.get("license_url", "")),
             "keywords_de": keywords_de,
         })
 
-        for resource in pkg.get("resources", []):
+        for resource in detail.get("resources", []):
             url = resource.get("url", "")
             fmt = resource.get("format", "")
             res_rows.append({
