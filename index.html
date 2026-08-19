@@ -6,33 +6,26 @@
   <title>OGD Monitoring BAFU</title>
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-  <!-- Offizielle Oblique CSS-Distribution (vendored, MIT, @oblique/oblique v15.4.0) -->
-  <link rel="stylesheet" href="vendor/oblique/oblique-core.css" />
-  <link rel="stylesheet" href="vendor/oblique/oblique-components.css" />
-  <link rel="stylesheet" href="vendor/oblique/oblique-alert.css" />
   <style>
-    /* Eigene CSS Custom Properties, Werte 1:1 aus den offiziellen
-       Oblique Design Tokens (@oblique/oblique/styles/scss/core/_variables.scss
-       und _palette.scss, Version 15.4.0). */
     :root {
-      --ob-color-primary:       #46596B; /* $ob-primary  (secondary-500) */
-      --ob-color-primary-dark:  #263645; /* secondary-700 */
-      --ob-color-primary-light: #F0F4F7; /* secondary-50  ($ob-extra-light) */
-      --ob-color-accent:        #E53940; /* $ob-accent (red-500) */
-      --ob-color-black:         #1C2834; /* $ob-default (secondary-800) */
-      --ob-color-gray-dark:     #46596B; /* secondary-500 */
-      --ob-color-gray:          #828E9A; /* secondary-300 */
-      --ob-color-gray-light:    #ACB4BD; /* secondary-200 */
-      --ob-color-bg:            #F0F4F7; /* secondary-50 ($ob-extra-light) */
+      --ob-color-primary:       #006F73;
+      --ob-color-primary-dark:  #005457;
+      --ob-color-primary-light: #E5F3F3;
+      --ob-color-accent:        #D4001A;
+      --ob-color-black:         #222222;
+      --ob-color-gray-dark:     #454545;
+      --ob-color-gray:          #767676;
+      --ob-color-gray-light:    #D5D5D5;
+      --ob-color-bg:            #F5F5F5;
       --ob-color-white:         #FFFFFF;
-      --ob-font-family:         'Noto Sans', Arial, system-ui, -apple-system, BlinkMacSystemFont, sans-serif; /* $ob-font */
-      --ob-space-xs:  4px;   /* $ob-spacing-xs */
-      --ob-space-sm:  8px;   /* $ob-spacing-sm */
-      --ob-space-md:  12px;  /* $ob-spacing-md */
-      --ob-space-lg:  24px;  /* $ob-spacing-lg */
-      --ob-space-xl:  32px;  /* $ob-spacing-xl */
-      --ob-shadow:    0 2px 4px rgba(0,0,0,0.06), 0 4px 10px rgba(0,0,0,0.08); /* ob-shadow-default */
-      --ob-radius:    4px;   /* $ob-border-radius-base */
+      --ob-font-family:         'Arial', 'Helvetica Neue', sans-serif;
+      --ob-space-xs:  4px;
+      --ob-space-sm:  8px;
+      --ob-space-md:  16px;
+      --ob-space-lg:  24px;
+      --ob-space-xl:  40px;
+      --ob-shadow:    0 2px 8px rgba(0,0,0,0.12);
+      --ob-radius:    4px;
       --ob-border:    1px solid var(--ob-color-gray-light);
     }
 
@@ -49,28 +42,26 @@
 
     /* ─── HEADER ─────────────────────────────────────────────── */
     header {
-      background: var(--ob-color-white);
-      color: var(--ob-color-black);
-      padding: var(--ob-space-sm) var(--ob-space-xl);
+      background: var(--ob-color-primary);
+      color: var(--ob-color-white);
+      padding: var(--ob-space-md) var(--ob-space-xl);
       display: flex;
       align-items: center;
       gap: var(--ob-space-md);
-      border-bottom: 1px solid #DFE4E9; /* secondary-100 */
+      box-shadow: var(--ob-shadow);
     }
     .header-logo {
+      height: 48px;
       display: flex;
       align-items: center;
       flex-shrink: 0;
     }
-    .header-logo img { height: 38px; width: auto; display: block; }
-    header h1 {
-      font-size: 1.65rem;
-      font-weight: 300;
-      letter-spacing: 0.01em;
-      padding-left: var(--ob-space-sm);
-      border-left: 1px solid #DFE4E9;
+    .header-logo img {
+      height: 48px;
+      width: auto;
     }
-    header p  { font-size: 0.82rem; color: var(--ob-color-gray-dark); margin-top: 2px; }
+    header h1 { font-size: 1.35rem; font-weight: 700; letter-spacing: 0.01em; }
+    header p  { font-size: 0.82rem; opacity: 0.85; margin-top: 2px; }
 
     /* ─── APP SHELL ───────────────────────────────────────────── */
     .app-shell {
@@ -252,14 +243,6 @@
       border-bottom: var(--ob-border);
     }
     .data-table tr:hover td { background: var(--ob-color-primary-light); }
-    .abt-row { cursor: pointer; }
-    .abt-toggle { width: 24px; color: var(--ob-color-primary); font-size: 0.8rem; }
-    .abt-detail td { background: var(--ob-color-bg); padding: var(--ob-space-md); }
-    .data-table-nested { font-size: 0.8rem; box-shadow: none; }
-    .data-table-nested th { background: var(--ob-color-white); }
-    .data-table-nested tr:hover td { background: var(--ob-color-white); }
-    .pkg-row { cursor: pointer; }
-    .pkg-row:hover td { background: var(--ob-color-primary-light) !important; color: var(--ob-color-primary-dark); }
 
     /* ─── BADGE ───────────────────────────────────────────────── */
     .badge {
@@ -271,6 +254,15 @@
       background: var(--ob-color-primary-light);
       color: var(--ob-color-primary-dark);
     }
+
+    /* ─── ABTEILUNG TABLE ────────────────────────────────────────── */
+    .abt-row { cursor: pointer; }
+    .abt-row:hover td { background: var(--ob-color-primary-light); }
+    .abt-toggle { font-size: 0.9rem; color: var(--ob-color-gray); width: 20px; }
+    .abt-detail td { background: var(--ob-color-bg); padding: var(--ob-space-sm) var(--ob-space-md); }
+    .data-table-nested { font-size: 0.8rem; }
+    .pkg-row { cursor: pointer; }
+    .pkg-row:hover td { background: var(--ob-color-primary-light); text-decoration: underline; }
   </style>
 </head>
 <body>
@@ -284,7 +276,7 @@
 <!-- Header -->
 <header>
   <div class="header-logo">
-    <img src="vendor/oblique/images/logo.svg" alt="Schweizerische Eidgenossenschaft">
+    <img src="vendor/oblique/images/logo-white.svg" alt="Schweizerische Eidgenossenschaft" />
   </div>
   <div>
     <h1>OGD Monitoring BAFU</h1>
@@ -314,9 +306,6 @@
     </div>
     <div class="nav-item" data-page="themen">
       <span class="icon">🌿</span> Themen
-    </div>
-    <div class="nav-item" data-page="plattform">
-      <span class="icon">🖥️</span> Plattform
     </div>
   </nav>
 
@@ -384,7 +373,7 @@
       </div>
       <div class="chart-card">
         <h2>Tabelle: Abteilungen</h2>
-        <table class="data-table ob-table" id="table-abt"></table>
+        <table class="data-table" id="table-abt"></table>
       </div>
     </div>
 
@@ -401,10 +390,6 @@
           <h2>Top-6 Formate über Zeit</h2>
           <div id="chart-fmt-line"></div>
         </div>
-      </div>
-      <div class="chart-card">
-        <h2>Tabelle: Formate pro Abteilung</h2>
-        <table class="data-table ob-table" id="table-fmt-maintainer"></table>
       </div>
     </div>
 
@@ -445,7 +430,7 @@
     <!-- ── LIZENZEN & AKTUALITÄT ──────────────────────────────────── -->
     <div id="page-lizenzen" class="page">
       <div class="page-title">Lizenzen &amp; Aktualität</div>
-      <div class="page-subtitle">Lizenzverteilung und Aktualität der Ressourcen (letztes Änderungsdatum)</div>
+      <div class="page-subtitle">Lizenzverteilung und Aktualität der Packages (letztes Änderungsdatum)</div>
       <div class="chart-row">
         <div class="chart-card">
           <h2>Lizenzverteilung (aktuell)</h2>
@@ -459,10 +444,6 @@
       <div class="chart-card">
         <h2>Lizenzen über Zeit</h2>
         <div id="chart-lic-line"></div>
-      </div>
-      <div class="chart-card">
-        <h2>Tabelle: Lizenzen</h2>
-        <table class="data-table ob-table" id="table-lic"></table>
       </div>
     </div>
 
@@ -486,56 +467,23 @@
       </div>
     </div>
 
-    <!-- ── PLATTFORM ──────────────────────────────────────────── -->
-    <div id="page-plattform" class="page">
-      <div class="page-title">Plattform</div>
-      <div class="page-subtitle">Verteilung der Ressourcen nach Hosting-Domain (aus dem Attribut <code>url</code>)</div>
-      <div class="chart-row">
-        <div class="chart-card">
-          <h2>Ressourcen pro Plattform (aktuell)</h2>
-          <div id="chart-plat-bar"></div>
-        </div>
-        <div class="chart-card">
-          <h2>Top-6 Plattformen über Zeit</h2>
-          <div id="chart-plat-line"></div>
-        </div>
-      </div>
-      <div class="chart-card">
-        <h2>Tabelle: Plattformen</h2>
-        <table class="data-table ob-table" id="table-plat"></table>
-      </div>
-    </div>
-
   </main>
 </div>
 
 <script>
 // ─────────────────────────────────────────────────────────────────────────────────
 // CONSTANTS
-// ─────────────────────────────────────────────────────────────────────────────
-// Farbpalette 1:1 aus den offiziellen Oblique Design Tokens (_palette.scss)
+// ─────────────────────────────────────────────────────────────────────────────────
 const COLORS = [
-  '#46596B', // secondary-500 (primary)
-  '#E53940', // red-500 (accent)
-  '#059669', // green-600
-  '#EA580C', // orange-600
-  '#2563EB', // blue-600
-  '#8655F6', // purple-500
-  '#828E9A', // secondary-300
-  '#BF1F25', // red-700
-  '#047857', // green-700
-  '#1E40AF', // blue-800
-  '#6D28D9', // purple-700
-  '#9A3412', // orange-800
-  '#263645', // secondary-700
-  '#FC656B', // red-400
-  '#34D399'  // green-400
+  '#006F73','#D4001A','#005457','#F5A623','#4A90D9',
+  '#7B4F9E','#2ECC71','#E67E22','#1ABC9C','#E74C3C',
+  '#3498DB','#9B59B6','#F39C12','#16A085','#C0392B'
 ];
 
 const PLOT_LAYOUT_BASE = {
   paper_bgcolor: 'rgba(0,0,0,0)',
   plot_bgcolor:  'rgba(0,0,0,0)',
-  font: { family: 'Noto Sans, Arial, sans-serif', color: '#46596B', size: 12 },
+  font: { family: 'Arial, Helvetica Neue, sans-serif', color: '#454545', size: 12 },
   margin: { t: 10, r: 10, b: 60, l: 10 },
   colorway: COLORS,
   legend: { bgcolor: 'rgba(0,0,0,0)' }
@@ -581,7 +529,7 @@ Promise.all([
   renderPage('dashboard');
 }).catch(err => {
   document.getElementById('loading').innerHTML =
-    `<p style="color:var(--ob-color-accent)">Fehler beim Laden der Daten:<br>${err}</p>`;
+    `<p style="color:#D4001A">Fehler beim Laden der Daten:<br>${err}</p>`;
 });
 
 // ─────────────────────────────────────────────────────────────────────────────────
@@ -609,7 +557,6 @@ function renderPage(page) {
       case 'stac':       renderStac();      break;
       case 'lizenzen':   renderLizenzen();  break;
       case 'themen':     renderThemen();    break;
-      case 'plattform':  renderPlattform(); break;
     }
   }
 }
@@ -675,7 +622,7 @@ function renderDashboard() {
   const stacCount = latestR.filter(r => r.has_stac === 'true').length;
   setText('kpi-stac', stacCount);
   setText('kpi-stac-pct', latestR.length ? `${((stacCount/latestR.length)*100).toFixed(1)} %` : '–');
-  const abt = new Set(latest.map(r => r.maintainer_email).filter(Boolean));
+  const abt = new Set(latest.map(r => r.maintainer_email || r.maintainer).filter(Boolean));
   setText('kpi-abteilungen', abt.size);
 
   if (prev.length) {
@@ -709,7 +656,9 @@ function renderDashboard() {
 function renderAbteilung() {
   const latestD = latestDate(packages);
   const latest  = byDate(packages, latestD);
-  const grouped = groupCount(latest, 'maintainer');
+  // Gruppiere nach maintainer_email (Fallback: maintainer)
+  const withKey = latest.map(r => ({ ...r, _abt: r.maintainer_email || r.maintainer || '' }));
+  const grouped = groupCount(withKey, '_abt');
 
   const label = g => g[0] || '(leer)';
 
@@ -724,7 +673,7 @@ function renderAbteilung() {
   const dates = [...new Set(packages.map(r=>r.snapshot_date))].sort();
   const traces = top5.map((abt, i) => ({
     x: dates,
-    y: dates.map(d => byDate(packages, d).filter(r=>r.maintainer===abt).length),
+    y: dates.map(d => byDate(packages, d).filter(r=>(r.maintainer_email||r.maintainer||'')===abt).length),
     name: label([abt]),
     type: 'scatter', mode: 'lines+markers',
     line: { color: COLORS[i], width: 2 },
@@ -738,7 +687,7 @@ function renderAbteilung() {
   const tbl = document.getElementById('table-abt');
   tbl.innerHTML = `<tr><th></th><th>Abteilung</th><th>E-Mail</th><th>Packages</th></tr>` +
     grouped.map((g, i) => {
-      const pkgs  = latest.filter(r=>r.maintainer===g[0]);
+      const pkgs  = withKey.filter(r=>r._abt===g[0]);
       const email = pkgs[0]?.maintainer_email || '';
       const rowsHtml = pkgs
         .sort((a,b) => (a.title_de||'').localeCompare(b.title_de||''))
@@ -762,19 +711,23 @@ function renderAbteilung() {
         </tr>`;
     }).join('');
 
+  // Toggle rows
   tbl.querySelectorAll('.abt-row').forEach(row => {
     row.addEventListener('click', () => {
       const detail = document.getElementById(row.dataset.target);
-      const open = detail.style.display !== 'none';
-      detail.style.display = open ? 'none' : 'table-row';
-      row.querySelector('.abt-toggle').textContent = open ? '▸' : '▾';
+      const toggle = row.querySelector('.abt-toggle');
+      if (detail.style.display === 'none') {
+        detail.style.display = '';
+        toggle.textContent = '▾';
+      } else {
+        detail.style.display = 'none';
+        toggle.textContent = '▸';
+      }
     });
   });
 
   tbl.querySelectorAll('.pkg-row').forEach(row => {
-    row.addEventListener('click', () => {
-      window.open(row.dataset.url, '_blank', 'noopener');
-    });
+    row.addEventListener('click', () => window.open(row.dataset.url, '_blank'));
   });
 }
 
@@ -802,95 +755,6 @@ function renderFormate() {
   Plotly.newPlot('chart-fmt-line', traces,
     plotDefaults({ legend: { orientation: 'h', y: -0.3 } }),
     { responsive: true, displayModeBar: false });
-
-  // ── Tabelle: Formate pro Abteilung ──────────────────────────────
-  const FORMAT_MAP = { 'WMS': 'Geodaten', 'WMTS': 'Geodaten', 'SPARQL': 'LinkedData' };
-  const mapFmt = fmt => FORMAT_MAP[fmt] || fmt;
-
-  const latestPkgD = latestDate(packages);
-  const latestPkgs = byDate(packages, latestPkgD);
-
-  // Lookup: package_name → maintainer (nur E-Mail-Adressen)
-  const pkgToMaintainer = {};
-  latestPkgs.forEach(p => {
-    if (p.maintainer && p.maintainer.includes('@'))
-      pkgToMaintainer[p.package_name] = { maintainer: p.maintainer, email: p.maintainer_email || p.maintainer };
-  });
-
-  // Join resources → maintainer, Formate als Set
-  const maintainerMap = {};
-  latest.forEach(r => {
-    const info = pkgToMaintainer[r.package_name];
-    if (!info) return;
-    const m = info.maintainer;
-    if (!maintainerMap[m]) maintainerMap[m] = { email: info.email, packages: {} };
-    if (!maintainerMap[m].packages[r.package_name]) maintainerMap[m].packages[r.package_name] = new Set();
-    if (r.format) maintainerMap[m].packages[r.package_name].add(mapFmt(r.format));
-  });
-
-  const maintainerRows = Object.entries(maintainerMap)
-    .map(([m, data]) => {
-      const pkgList = Object.entries(data.packages);
-      const allFormats = [...new Set(pkgList.flatMap(([, fmts]) => [...fmts]))].sort();
-      return { maintainer: m, email: data.email, pkgCount: pkgList.length, formats: allFormats, pkgList };
-    })
-    .sort((a, b) => b.pkgCount - a.pkgCount);
-
-  const BADGE_COLORS = {
-    'Geodaten': '#1565c0', 'LinkedData': '#6a1b9a', 'API': '#0288d1',
-    'HTML': '#00796b', 'SERVICE': '#4527a0', 'ZIP': '#e65100',
-    'XLS': '#2e7d32', 'PDF': '#c62828', 'GeoJSON': '#558b2f',
-    'GPKG': '#33691e', 'XML': '#f57f17'
-  };
-  const badgeStyle = fmt => {
-    const bg = BADGE_COLORS[fmt] || '#546e7a';
-    return `style="background:${bg};color:#fff;padding:1px 7px;border-radius:10px;font-size:0.75em;display:inline-block;margin:1px;"`;
-  };
-
-  const tbl = document.getElementById('table-fmt-maintainer');
-  tbl.innerHTML = `<tr><th></th><th>Abteilung (Maintainer)</th><th>E-Mail</th><th>Packages</th><th>Formate</th></tr>` +
-    maintainerRows.map((row, i) => {
-      const formatBadges = row.formats.map(f => `<span ${badgeStyle(f)}>${f}</span>`).join(' ');
-      const detailRows = row.pkgList
-        .sort((a, b) => a[0].localeCompare(b[0]))
-        .map(([pkgName, fmts]) => {
-          const pkg = latestPkgs.find(p => p.package_name === pkgName);
-          const title = pkg?.title_de || pkgName;
-          const fmtBadges = [...fmts].sort().map(f => `<span ${badgeStyle(f)}>${f}</span>`).join(' ');
-          return `<tr class="pkg-row" style="cursor:pointer;" data-url="https://opendata.swiss/de/dataset/${encodeURIComponent(pkgName)}">
-            <td>${title}</td><td>${pkgName}</td><td>${fmtBadges}</td>
-          </tr>`;
-        }).join('');
-      return `
-        <tr class="abt-row" style="cursor:pointer;" data-target="fmt-detail-${i}">
-          <td class="abt-toggle">▸</td>
-          <td>${row.maintainer}</td>
-          <td>${row.email}</td>
-          <td><span class="badge">${row.pkgCount}</span></td>
-          <td>${formatBadges}</td>
-        </tr>
-        <tr id="fmt-detail-${i}" class="abt-detail" style="display:none;">
-          <td></td>
-          <td colspan="4">
-            <table class="data-table data-table-nested ob-table ob-table-sm">
-              <tr><th>Titel</th><th>package_name</th><th>Formate</th></tr>
-              ${detailRows}
-            </table>
-          </td>
-        </tr>`;
-    }).join('');
-
-  tbl.querySelectorAll('.abt-row').forEach(row => {
-    row.addEventListener('click', () => {
-      const detail = document.getElementById(row.dataset.target);
-      const open = detail.style.display !== 'none';
-      detail.style.display = open ? 'none' : 'table-row';
-      row.querySelector('.abt-toggle').textContent = open ? '▸' : '▾';
-    });
-  });
-  tbl.querySelectorAll('.pkg-row').forEach(row => {
-    row.addEventListener('click', () => window.open(row.dataset.url, '_blank', 'noopener'));
-  });
 }
 
 // ─────────────────────────────────────────────────────────────────────────────────
@@ -935,8 +799,8 @@ function renderStac() {
 // LIZENZEN & AKTUALITÄT
 // ─────────────────────────────────────────────────────────────────────────────────
 function renderLizenzen() {
-  const latestD = latestDate(resources);
-  const latest  = byDate(resources, latestD);
+  const latestD = latestDate(packages);
+  const latest  = byDate(packages, latestD);
 
   // Lizenz-Pie
   const licGroups = groupCount(latest, 'license').slice(0, 8);
@@ -958,63 +822,21 @@ function renderLizenzen() {
   });
   const ySorted = Object.entries(years).sort((a,b)=>a[0].localeCompare(b[0]));
   Plotly.newPlot('chart-modified-bar', [
-    barTrace(ySorted.map(y=>y[0]), ySorted.map(y=>y[1]), 'Ressourcen', COLORS[0])
+    barTrace(ySorted.map(y=>y[0]), ySorted.map(y=>y[1]), 'Packages', COLORS[0])
   ], plotDefaults({ xaxis: { type: 'category' } }),
   { responsive: true, displayModeBar: false });
 
   // Lizenzen über Zeit (top 5)
   const top5lic = licGroups.slice(0, 5).map(g => g[0]);
-  const dates   = [...new Set(resources.map(r=>r.snapshot_date))].sort();
+  const dates   = [...new Set(packages.map(r=>r.snapshot_date))].sort();
   const traces  = top5lic.map((lic, i) => lineTrace(
     dates,
-    dates.map(d => byDate(resources,d).filter(r=>r.license===lic).length),
+    dates.map(d => byDate(packages,d).filter(r=>r.license===lic).length),
     lic || '(leer)', COLORS[i]
   ));
   Plotly.newPlot('chart-lic-line', traces,
     plotDefaults({ legend: { orientation: 'h', y: -0.3 } }),
     { responsive: true, displayModeBar: false });
-
-  // Table (Zeilen aufklappbar → zeigt Ressourcen der Lizenz)
-  const licGroupsAll = groupCount(latest, 'license');
-  const tbl = document.getElementById('table-lic');
-  tbl.innerHTML = `<tr><th></th><th>Lizenz</th><th>Ressourcen</th></tr>` +
-    licGroupsAll.map((g, i) => {
-      const res = latest.filter(r => r.license === g[0]);
-      const rowsHtml = res
-        .sort((a,b) => (a.title_de||'').localeCompare(b.title_de||''))
-        .map(r => `<tr class="pkg-row" data-url="https://opendata.swiss/de/dataset/${encodeURIComponent(r.package_name)}"><td>${r.title_de || r.resource_id}</td><td>${r.package_name}</td><td>${r.format || ''}</td></tr>`)
-        .join('');
-      return `
-        <tr class="abt-row" data-target="lic-detail-${i}">
-          <td class="abt-toggle">▸</td>
-          <td>${g[0] || '(leer)'}</td>
-          <td><span class="badge">${g[1]}</span></td>
-        </tr>
-        <tr id="lic-detail-${i}" class="abt-detail" style="display:none;">
-          <td></td>
-          <td colspan="2">
-            <table class="data-table data-table-nested ob-table ob-table-sm">
-              <tr><th>Titel</th><th>package_name</th><th>Format</th></tr>
-              ${rowsHtml}
-            </table>
-          </td>
-        </tr>`;
-    }).join('');
-
-  tbl.querySelectorAll('.abt-row').forEach(row => {
-    row.addEventListener('click', () => {
-      const detail = document.getElementById(row.dataset.target);
-      const open = detail.style.display !== 'none';
-      detail.style.display = open ? 'none' : 'table-row';
-      row.querySelector('.abt-toggle').textContent = open ? '▸' : '▾';
-    });
-  });
-
-  tbl.querySelectorAll('.pkg-row').forEach(row => {
-    row.addEventListener('click', () => {
-      window.open(row.dataset.url, '_blank', 'noopener');
-    });
-  });
 }
 
 // ─────────────────────────────────────────────────────────────────────────────────
@@ -1076,89 +898,7 @@ function renderThemen() {
   { responsive: true, displayModeBar: false });
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// PLATTFORM
-// ─────────────────────────────────────────────────────────────────────────────
-function getPlatform(url) {
-  if (!url) return '(leer)';
-  try {
-    return new URL(url).hostname || '(leer)';
-  } catch (e) {
-    const match = url.match(/^[a-z]+:\/\/([^\/]+)/i);
-    return match ? match[1] : '(leer)';
-  }
-}
-
-function renderPlattform() {
-  const latestD = latestDate(resources);
-  const latest  = byDate(resources, latestD);
-  const platOf  = r => getPlatform(r.url);
-
-  const platCount = {};
-  latest.forEach(r => { const p = platOf(r); platCount[p] = (platCount[p] || 0) + 1; });
-  const grouped = Object.entries(platCount).sort((a,b) => b[1]-a[1]);
-
-  // Bar chart
-  Plotly.newPlot('chart-plat-bar', [
-    barTrace(grouped.map(g=>g[0]), grouped.map(g=>g[1]), 'Ressourcen', COLORS[0])
-  ], plotDefaults({ margin: { t:10,r:10,b:120,l:40 }, xaxis: { tickangle: -40 } }),
-  { responsive: true, displayModeBar: false });
-
-  // Top-6 line over time
-  const top6  = grouped.slice(0, 6).map(g => g[0]);
-  const dates = [...new Set(resources.map(r=>r.snapshot_date))].sort();
-  const traces = top6.map((plat, i) => lineTrace(
-    dates,
-    dates.map(d => byDate(resources, d).filter(r => platOf(r) === plat).length),
-    plat, COLORS[i]
-  ));
-  Plotly.newPlot('chart-plat-line', traces,
-    plotDefaults({ legend: { orientation: 'h', y: -0.3 } }),
-    { responsive: true, displayModeBar: false });
-
-  // Table (Zeilen aufklappbar → zeigt Ressourcen der Plattform)
-  const tbl = document.getElementById('table-plat');
-  tbl.innerHTML = `<tr><th></th><th>Plattform</th><th>Ressourcen</th></tr>` +
-    grouped.map((g, i) => {
-      const res = latest.filter(r => platOf(r) === g[0]);
-      const rowsHtml = res
-        .sort((a,b) => (a.title_de||'').localeCompare(b.title_de||''))
-        .map(r => `<tr class="pkg-row" data-url="https://opendata.swiss/de/dataset/${encodeURIComponent(r.package_name)}"><td>${r.title_de || r.resource_id}</td><td>${r.package_name}</td><td>${r.format || ''}</td></tr>`)
-        .join('');
-      return `
-        <tr class="abt-row" data-target="plat-detail-${i}">
-          <td class="abt-toggle">▸</td>
-          <td>${g[0]}</td>
-          <td><span class="badge">${g[1]}</span></td>
-        </tr>
-        <tr id="plat-detail-${i}" class="abt-detail" style="display:none;">
-          <td></td>
-          <td colspan="2">
-            <table class="data-table data-table-nested ob-table ob-table-sm">
-              <tr><th>Titel</th><th>package_name</th><th>Format</th></tr>
-              ${rowsHtml}
-            </table>
-          </td>
-        </tr>`;
-    }).join('');
-
-  tbl.querySelectorAll('.abt-row').forEach(row => {
-    row.addEventListener('click', () => {
-      const detail = document.getElementById(row.dataset.target);
-      const open = detail.style.display !== 'none';
-      detail.style.display = open ? 'none' : 'table-row';
-      row.querySelector('.abt-toggle').textContent = open ? '▸' : '▾';
-    });
-  });
-
-  tbl.querySelectorAll('.pkg-row').forEach(row => {
-    row.addEventListener('click', () => {
-      window.open(row.dataset.url, '_blank', 'noopener');
-    });
-  });
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────────
 // UTILITY
 // ─────────────────────────────────────────────────────────────────────────────────
 function setText(id, val) {
