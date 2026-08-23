@@ -1,6 +1,6 @@
 package_name,title_de,maintainer,maintainer_email,issued,modified,license,keywords_de
+waldbrandpraventionsmassnahmen,Waldbrandpräventionsmassnahmen,info@bafu.admin.ch,info@bafu.admin.ch,2023-03-15T00:00:00,2026-08-22T10:14:19+00:00,,
 waldbrandgefahr,Waldbrandgefahr,info@bafu.admin.ch,info@bafu.admin.ch,2023-03-15T00:00:00,2026-08-21T10:14:24+00:00,,
-waldbrandpraventionsmassnahmen,Waldbrandpräventionsmassnahmen,info@bafu.admin.ch,info@bafu.admin.ch,2023-03-15T00:00:00,2026-08-21T10:14:24+00:00,,
 datenbank-querprofile-qp-querprofilachse,Datenbank Querprofile (QP) - Querprofilachse,gefahrenpraevention@bafu.admin.ch,gefahrenpraevention@bafu.admin.ch,2009-01-01T00:00:00,2026-02-01T00:00:00,,"naturgefahr,umwelt,gefahren,geobasisdaten,bgdi-bundesgeodaten-infrastruktur"
 datenbank-querprofile-qp-vermessungsabschnitt,Datenbank Querprofile (QP) - Vermessungsabschnitt,gefahrenpraevention@bafu.admin.ch,gefahrenpraevention@bafu.admin.ch,2009-01-01T00:00:00,2026-02-01T00:00:00,,"gefahren,umwelt,geobasisdaten,bgdi-bundesgeodaten-infrastruktur,naturgefahr"
 luftbelastung-durch-ozon,Luftbelastung durch Ozon,chemicals@bafu.admin.ch,chemicals@bafu.admin.ch,2026-01-01T00:00:00,,,"luftschadstoff,luft,gesundheit-und-sicherheit,atmospharische-bedingungen,bgdi-bundesgeodaten-infrastruktur,e-geoch,aufbewahrungs--und-archivierungsplanung-aap---bund"
