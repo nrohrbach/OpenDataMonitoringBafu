@@ -392,7 +392,7 @@
         </div>
       </div>
       <div class="chart-card">
-        <h2>Tabelle: Formate nach Abteilung</h2>
+        <h2>Tabelle: Abteilung → Format → Datensätze</h2>
         <table class="data-table" id="table-fmt"></table>
       </div>
     </div>
@@ -760,52 +760,86 @@ function renderFormate() {
     plotDefaults({ legend: { orientation: 'h', y: -0.3 } }),
     { responsive: true, displayModeBar: false });
 
-  // Tabelle: Formate nach Abteilung
+  // Tabelle: Abteilung → Format → Datensätze
   const latestPkgD = latestDate(packages);
   const latestPkgs = byDate(packages, latestPkgD);
-  const pkgToAbt = {};
-  latestPkgs.forEach(p => {
-    pkgToAbt[p.package_name] = p.maintainer_email || p.maintainer || '(leer)';
-  });
 
-  const fmtAbtMap = {};
+  // package_name → Set of formats
+  const pkgFormats = {};
   latest.forEach(r => {
-    const fmt = r.format || '(leer)';
-    const abt = pkgToAbt[r.package_name] || '(leer)';
-    if (!fmtAbtMap[fmt]) fmtAbtMap[fmt] = {};
-    fmtAbtMap[fmt][abt] = (fmtAbtMap[fmt][abt] || 0) + 1;
+    if (!pkgFormats[r.package_name]) pkgFormats[r.package_name] = new Set();
+    pkgFormats[r.package_name].add(r.format || '(leer)');
   });
 
-  const fmtSorted = Object.entries(fmtAbtMap)
-    .map(([fmt, abtMap]) => [fmt, abtMap, Object.values(abtMap).reduce((a,b)=>a+b,0)])
-    .sort((a,b) => b[2]-a[2]);
+  // abt → fmt → [packages]
+  const abtFmtMap = {};
+  latestPkgs.forEach(p => {
+    const abt = p.maintainer_email || p.maintainer || '(leer)';
+    const fmts = pkgFormats[p.package_name];
+    if (!fmts) return;
+    if (!abtFmtMap[abt]) abtFmtMap[abt] = {};
+    fmts.forEach(fmt => {
+      if (!abtFmtMap[abt][fmt]) abtFmtMap[abt][fmt] = [];
+      abtFmtMap[abt][fmt].push(p);
+    });
+  });
+
+  // sort abt by unique package count
+  const abtSorted = Object.entries(abtFmtMap)
+    .map(([abt, fmtMap]) => {
+      const pkgSet = new Set(Object.values(fmtMap).flat().map(p => p.package_name));
+      return [abt, fmtMap, pkgSet.size];
+    })
+    .sort((a, b) => b[2] - a[2]);
 
   const tbl = document.getElementById('table-fmt');
-  tbl.innerHTML = `<tr><th></th><th>Format</th><th>Ressourcen</th></tr>` +
-    fmtSorted.map(([fmt, abtMap, total], i) => {
-      const abtSorted = Object.entries(abtMap).sort((a,b)=>b[1]-a[1]);
-      const abtHtml = abtSorted.map(([abt, cnt]) =>
-        `<tr><td>${abt}</td><td><span class="badge">${cnt}</span></td></tr>`
-      ).join('');
-      return `
-        <tr class="abt-row" data-target="fmt-detail-${i}">
+  let rows = `<tr><th></th><th>Abteilung</th><th>Datensätze</th></tr>`;
+
+  abtSorted.forEach(([abt, fmtMap, totalPkgs], ai) => {
+    const fmtSorted = Object.entries(fmtMap).sort((a, b) => b[1].length - a[1].length);
+
+    let fmtRows = `<table class="data-table data-table-nested"><tr><th></th><th>Format</th><th>Datensätze</th></tr>`;
+    fmtSorted.forEach(([fmt, pkgs], fi) => {
+      const pkgsSorted = [...pkgs].sort((a,b) => (a.title_de||'').localeCompare(b.title_de||''));
+      const pkgHtml = pkgsSorted.map(p => {
+        const url = `https://opendata.swiss/de/dataset/${encodeURIComponent(p.package_name)}`;
+        return `<tr class="pkg-row" data-url="${url}"><td>${p.title_de || p.package_name}</td><td><a href="${url}" target="_blank" style="color:var(--ob-color-primary)">↗</a></td></tr>`;
+      }).join('');
+      fmtRows += `
+        <tr class="abt-row" data-target="fmt-${ai}-${fi}">
           <td class="abt-toggle">▸</td>
           <td>${fmt}</td>
-          <td><span class="badge">${total}</span></td>
+          <td><span class="badge">${pkgs.length}</span></td>
         </tr>
-        <tr id="fmt-detail-${i}" class="abt-detail" style="display:none;">
+        <tr id="fmt-${ai}-${fi}" class="abt-detail" style="display:none;">
           <td></td>
           <td colspan="2">
             <table class="data-table data-table-nested">
-              <tr><th>Abteilung</th><th>Ressourcen</th></tr>
-              ${abtHtml}
+              <tr><th>Datensatz</th><th></th></tr>
+              ${pkgHtml}
             </table>
           </td>
         </tr>`;
-    }).join('');
+    });
+    fmtRows += `</table>`;
+
+    rows += `
+      <tr class="abt-row" data-target="abt-${ai}">
+        <td class="abt-toggle">▸</td>
+        <td>${abt}</td>
+        <td><span class="badge">${totalPkgs}</span></td>
+      </tr>
+      <tr id="abt-${ai}" class="abt-detail" style="display:none;">
+        <td></td>
+        <td colspan="2">${fmtRows}</td>
+      </tr>`;
+  });
+
+  tbl.innerHTML = rows;
 
   tbl.querySelectorAll('.abt-row').forEach(row => {
-    row.addEventListener('click', () => {
+    row.addEventListener('click', e => {
+      e.stopPropagation();
       const detail = document.getElementById(row.dataset.target);
       const toggle = row.querySelector('.abt-toggle');
       if (detail.style.display === 'none') {
@@ -815,6 +849,13 @@ function renderFormate() {
         detail.style.display = 'none';
         toggle.textContent = '▸';
       }
+    });
+  });
+
+  tbl.querySelectorAll('.pkg-row').forEach(row => {
+    row.addEventListener('click', e => {
+      e.stopPropagation();
+      window.open(row.dataset.url, '_blank');
     });
   });
 }
