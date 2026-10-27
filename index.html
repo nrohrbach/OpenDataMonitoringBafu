@@ -312,7 +312,7 @@
   <!-- Main content -->
   <main>
 
-    <!-- ── DASHBOARD ────────────────────────────────────────────── -->
+    <!-- ── DASHBOARD ──────────────────────────────────────────────────── -->
     <div id="page-dashboard" class="page active">
       <div class="page-title">Dashboard</div>
       <div class="page-subtitle">Aktueller Stand und Gesamtentwicklung der BAFU Open-Data-Publikationen</div>
@@ -357,7 +357,7 @@
       </div>
     </div>
 
-    <!-- ── ABTEILUNG ─────────────────────────────────────────────── -->
+    <!-- ── ABTEILUNG ──────────────────────────────────────────────────────── -->
     <div id="page-abteilung" class="page">
       <div class="page-title">Packages nach Abteilung</div>
       <div class="page-subtitle">Anzahl Packages pro Abteilung (Maintainer) — aktueller Stand und Entwicklung</div>
@@ -377,7 +377,7 @@
       </div>
     </div>
 
-    <!-- ── FORMATE ───────────────────────────────────────────────── -->
+    <!-- ── FORMATE ─────────────────────────────────────────────────────────── -->
     <div id="page-formate" class="page">
       <div class="page-title">Ressourcen-Formate</div>
       <div class="page-subtitle">Verteilung der Datenformate (WMS, CSV, GeoJSON, …) — aktuell und historisch</div>
@@ -391,9 +391,13 @@
           <div id="chart-fmt-line"></div>
         </div>
       </div>
+      <div class="chart-card">
+        <h2>Tabelle: Formate nach Abteilung</h2>
+        <table class="data-table" id="table-fmt"></table>
+      </div>
     </div>
 
-    <!-- ── STAC ──────────────────────────────────────────────────── -->
+    <!-- ── STAC ──────────────────────────────────────────────────────────────── -->
     <div id="page-stac" class="page">
       <div class="page-title">STAC-Geodaten</div>
       <div class="page-subtitle">Ressourcen mit STAC-Browser-Link (data.geo.admin.ch/browser)</div>
@@ -427,7 +431,7 @@
       </div>
     </div>
 
-    <!-- ── LIZENZEN & AKTUALITÄT ──────────────────────────────────── -->
+    <!-- ── LIZENZEN & AKTUALITÄT ──────────────────────────────────────────── -->
     <div id="page-lizenzen" class="page">
       <div class="page-title">Lizenzen &amp; Aktualität</div>
       <div class="page-subtitle">Lizenzverteilung und Aktualität der Packages (letztes Änderungsdatum)</div>
@@ -447,7 +451,7 @@
       </div>
     </div>
 
-    <!-- ── THEMEN ───────────────────────────────────────────────────── -->
+    <!-- ── THEMEN ─────────────────────────────────────────────────────────────────── -->
     <div id="page-themen" class="page">
       <div class="page-title">Themen</div>
       <div class="page-subtitle">Keywords der Packages, gematcht gegen BAFU-Themenbereiche</div>
@@ -471,9 +475,9 @@
 </div>
 
 <script>
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 // CONSTANTS
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 const COLORS = [
   '#006F73','#D4001A','#005457','#F5A623','#4A90D9',
   '#7B4F9E','#2ECC71','#E67E22','#1ABC9C','#E74C3C',
@@ -504,9 +508,9 @@ const BAFU_THEMEN = {
   'Georeferenz':['geodaten','gis','karte','wms','wmts','shapefile']
 };
 
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 // DATA LOADING
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 let packages = [], resources = [];
 
 function parseCsv(url) {
@@ -532,9 +536,9 @@ Promise.all([
     `<p style="color:#D4001A">Fehler beim Laden der Daten:<br>${err}</p>`;
 });
 
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 // NAVIGATION
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 document.querySelectorAll('.nav-item').forEach(el => {
   el.addEventListener('click', () => {
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -561,9 +565,9 @@ function renderPage(page) {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 // HELPERS
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 function latestDate(data) {
   const dates = [...new Set(data.map(r => r.snapshot_date))].sort();
   return dates[dates.length - 1];
@@ -605,9 +609,9 @@ function barTrace(x, y, name, color) {
   return { x, y, name, type: 'bar', marker: { color } };
 }
 
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 // DASHBOARD
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 function renderDashboard() {
   const latestD  = latestDate(packages);
   const prevD    = prevDate(packages);
@@ -650,9 +654,9 @@ function renderDashboard() {
   ], plotDefaults({ yaxis: { rangemode: 'tozero' } }), { responsive: true, displayModeBar: false });
 }
 
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 // ABTEILUNG
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 function renderAbteilung() {
   const latestD = latestDate(packages);
   const latest  = byDate(packages, latestD);
@@ -731,9 +735,9 @@ function renderAbteilung() {
   });
 }
 
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 // FORMATE
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 function renderFormate() {
   const latestD = latestDate(resources);
   const latest  = byDate(resources, latestD);
@@ -755,11 +759,69 @@ function renderFormate() {
   Plotly.newPlot('chart-fmt-line', traces,
     plotDefaults({ legend: { orientation: 'h', y: -0.3 } }),
     { responsive: true, displayModeBar: false });
+
+  // Tabelle: Formate nach Abteilung
+  const latestPkgD = latestDate(packages);
+  const latestPkgs = byDate(packages, latestPkgD);
+  const pkgToAbt = {};
+  latestPkgs.forEach(p => {
+    pkgToAbt[p.package_name] = p.maintainer_email || p.maintainer || '(leer)';
+  });
+
+  const fmtAbtMap = {};
+  latest.forEach(r => {
+    const fmt = r.format || '(leer)';
+    const abt = pkgToAbt[r.package_name] || '(leer)';
+    if (!fmtAbtMap[fmt]) fmtAbtMap[fmt] = {};
+    fmtAbtMap[fmt][abt] = (fmtAbtMap[fmt][abt] || 0) + 1;
+  });
+
+  const fmtSorted = Object.entries(fmtAbtMap)
+    .map(([fmt, abtMap]) => [fmt, abtMap, Object.values(abtMap).reduce((a,b)=>a+b,0)])
+    .sort((a,b) => b[2]-a[2]);
+
+  const tbl = document.getElementById('table-fmt');
+  tbl.innerHTML = `<tr><th></th><th>Format</th><th>Ressourcen</th></tr>` +
+    fmtSorted.map(([fmt, abtMap, total], i) => {
+      const abtSorted = Object.entries(abtMap).sort((a,b)=>b[1]-a[1]);
+      const abtHtml = abtSorted.map(([abt, cnt]) =>
+        `<tr><td>${abt}</td><td><span class="badge">${cnt}</span></td></tr>`
+      ).join('');
+      return `
+        <tr class="abt-row" data-target="fmt-detail-${i}">
+          <td class="abt-toggle">▸</td>
+          <td>${fmt}</td>
+          <td><span class="badge">${total}</span></td>
+        </tr>
+        <tr id="fmt-detail-${i}" class="abt-detail" style="display:none;">
+          <td></td>
+          <td colspan="2">
+            <table class="data-table data-table-nested">
+              <tr><th>Abteilung</th><th>Ressourcen</th></tr>
+              ${abtHtml}
+            </table>
+          </td>
+        </tr>`;
+    }).join('');
+
+  tbl.querySelectorAll('.abt-row').forEach(row => {
+    row.addEventListener('click', () => {
+      const detail = document.getElementById(row.dataset.target);
+      const toggle = row.querySelector('.abt-toggle');
+      if (detail.style.display === 'none') {
+        detail.style.display = '';
+        toggle.textContent = '▾';
+      } else {
+        detail.style.display = 'none';
+        toggle.textContent = '▸';
+      }
+    });
+  });
 }
 
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 // STAC
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 function renderStac() {
   const latestD = latestDate(resources);
   const latest  = byDate(resources, latestD);
@@ -795,9 +857,9 @@ function renderStac() {
   { responsive: true, displayModeBar: false });
 }
 
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 // LIZENZEN & AKTUALITÄT
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 function renderLizenzen() {
   const latestD = latestDate(packages);
   const latest  = byDate(packages, latestD);
@@ -839,9 +901,9 @@ function renderLizenzen() {
     { responsive: true, displayModeBar: false });
 }
 
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 // THEMEN
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 function renderThemen() {
   const latestD = latestDate(packages);
   const latest  = byDate(packages, latestD);
@@ -898,9 +960,9 @@ function renderThemen() {
   { responsive: true, displayModeBar: false });
 }
 
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 // UTILITY
-// ─────────────────────────────────────────────────────────────────────────────────
+// ───────────────────────────────────────────────────────────────────────────────────
 function setText(id, val) {
   const el = document.getElementById(id);
   if (el) el.textContent = val;
