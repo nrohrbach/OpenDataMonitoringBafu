@@ -1,6 +1,7 @@
 package_name,title_de,maintainer,maintainer_email,issued,modified,license,keywords_de
-nawa-trend-nationale-beobachtung-oberflachengewasserqualitat-messdaten,"NAWA TREND – Nationale Beobachtung Oberflächengewässerqualität, Messdaten",nawa@bafu.admin.ch,nawa@bafu.admin.ch,2026-06-23T00:00:00,2026-11-17T00:00:00,,"gewasserqualitat,mikroverunreinigungen,nawa,oberflachengewasser,wasserchemie"
-waldbrandgefahr,Waldbrandgefahr,info@bafu.admin.ch,info@bafu.admin.ch,2023-03-15T00:00:00,2026-11-17T11:14:25+00:00,,
+waldbrandgefahr,Waldbrandgefahr,info@bafu.admin.ch,info@bafu.admin.ch,2023-03-15T00:00:00,2026-11-18T11:13:49+00:00,,
+infotracer-gewasser-tracer-daten,InfoTracer – Gewässer-Tracer-Daten,info@bafu.admin.ch,info@bafu.admin.ch,2026-06-23T00:00:00,2026-11-18T00:00:00,,"gewasserschutz,tracer,wasserqualitat"
+nawa-trend-nationale-beobachtung-oberflachengewasserqualitat-messdaten,"NAWA TREND – Nationale Beobachtung Oberflächengewässerqualität, Messdaten",nawa@bafu.admin.ch,nawa@bafu.admin.ch,2026-06-23T00:00:00,2026-11-18T00:00:00,,"gewasserqualitat,mikroverunreinigungen,nawa,oberflachengewasser,wasserchemie"
 waldbrandpraventionsmassnahmen,Waldbrandpräventionsmassnahmen,info@bafu.admin.ch,info@bafu.admin.ch,2023-03-15T00:00:00,2026-11-17T11:14:25+00:00,,
 wolfskompartimente,Wolfskompartimente,bnl@bafu.admin.ch,bnl@bafu.admin.ch,2026-10-07T00:00:00,,,bgdi-bundesgeodaten-infrastruktur
 luchskompartimente,Luchskompartimente,bnl@bafu.admin.ch,bnl@bafu.admin.ch,2026-10-07T00:00:00,,,bgdi-bundesgeodaten-infrastruktur
@@ -240,7 +241,6 @@ karte-der-aktuellen-erdbeben-letzte-90-tage-in-der-schweiz-und-im-grenznahen-aus
 aktuelle-lage-trockenheit-in-der-schweiz,Aktuelle Lage Trockenheit in der Schweiz,hydrologie@bafu.admin.ch,hydrologie@bafu.admin.ch,2024-11-25T00:00:00,,,"landwirtschaft,see,niederschlag,gewasser,hydrologie,fliessgewasser,bgdi-bundesgeodaten-infrastruktur"
 aktuelle-gefahrenstufe-trockenheit,Aktuelle Gefahrenstufe Trockenheit,hydrologie@bafu.admin.ch,hydrologie@bafu.admin.ch,2024-11-25T00:00:00,,,"fliessgewasser,landwirtschaft,gewasser,see,niederschlag,hydrologie,bgdi-bundesgeodaten-infrastruktur"
 bundesinventar-der-eidgenossischen-jagdbanngebiete-inkl-routennetz-jagdbanngebiete,Bundesinventar der eidgenössischen Jagdbanngebiete (inkl. Routennetz) - Jagdbanngebiete,bnl@bafu.admin.ch,bnl@bafu.admin.ch,1992-01-01T00:00:00,2023-06-15T00:00:00,,"e-geoch,aufbewahrungs--und-archivierungsplanung-aap---bund,geobasisdaten,umwelt,lebensraume-und-biotope,schutzgebiete,bgdi-bundesgeodaten-infrastruktur"
-invasive-gebietsfremde-pflanzen-potentialkarte-kaukasus-fettkraut,Invasive gebietsfremde Pflanzen - Potentialkarte Kaukasus-Fettkraut,altlasten@bafu.admin.ch,altlasten@bafu.admin.ch,,2015-04-02T00:00:00,,"umwelt,bgdi-bundesgeodaten-infrastruktur"
 invasive-gebietsfremde-pflanzen-potentialkarte-riesenbarenklau,Invasive gebietsfremde Pflanzen - Potentialkarte Riesenbärenklau,altlasten@bafu.admin.ch,altlasten@bafu.admin.ch,,2015-05-04T00:00:00,,"umwelt,bgdi-bundesgeodaten-infrastruktur"
 invasive-gebietsfremde-pflanzen-potentialkarte-igelgurke,Invasive gebietsfremde Pflanzen - Potentialkarte Igelgurke,altlasten@bafu.admin.ch,altlasten@bafu.admin.ch,,2015-04-02T00:00:00,,"umwelt,bgdi-bundesgeodaten-infrastruktur"
 hqstat-hochwasserstatistik,HQStat Hochwasserstatistik,hydrologie@bafu.admin.ch,hydrologie@bafu.admin.ch,2014-01-01T00:00:00,,,"gewiss,gewasser,bgdi-bundesgeodaten-infrastruktur"
