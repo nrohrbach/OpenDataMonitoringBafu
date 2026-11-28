@@ -3,8 +3,12 @@ baumkronenbedeckung-in-siedlungsarealen-der-gemeinden,a4e4a16e-f47b-4f54-81f9-22
 baumkronenbedeckung-in-siedlungsarealen-der-gemeinden,f2a211f7-9431-495f-beff-3d334abce4d3,dp-urban-tree-canopy-cover – GraphQL API,JSON,https://api.data-platform.cloud.bafu.admin.ch/api,application/json,,,terms_by,false,false
 infotracer-gewasser-tracer-daten,ea0a2f6c-acb1-426f-89a4-7b19f42783f3,dp-tracer – GraphQL API,JSON,https://api.data-platform.cloud.bafu.admin.ch/api,application/json,,,terms_by,false,false
 infotracer-gewasser-tracer-daten,0ae3cba3-e344-46fa-85e3-5a89a4738f83,dp-tracer – Daten-Download,CSV,https://api.data-platform.cloud.bafu.admin.ch/download/water/tracer/,text/csv,,,terms_by,false,false
+flussvermessung,37bcbf6c-0b1e-4df9-a6a0-f0cef4d94809,dp-river_profile – GraphQL API,JSON,https://api.data-platform.cloud.bafu.admin.ch/api,application/json,,,terms_by,false,false
+flussvermessung,01765444-cab8-4921-8d95-b22a7eff4d09,dp-river_profile – Daten-Download,CSV,https://api.data-platform.cloud.bafu.admin.ch/download/dp-river_profile/,text/csv,,,terms_by,false,false
 hydrologische-messdaten-automatische-stationen,002deb11-53b8-48e3-907c-3bb4cb5e7b44,dp-observations – Daten-Download,CSV,https://api.data-platform.cloud.bafu.admin.ch/download/water/observations/,text/csv,,,terms_by,false,false
 hydrologische-messdaten-automatische-stationen,80dc6fb9-106c-4c2c-9386-c96d1ca8ec5d,dp-observations – GraphQL API,JSON,https://api.data-platform.cloud.bafu.admin.ch/api,application/json,,,terms_by,false,false
+nis-umfrage,4e9224da-1ddf-44e9-bb2d-a796a4b4ef0a,dp-nis_survey – Daten-Download,CSV,https://api.data-platform.cloud.bafu.admin.ch/download/dp-nis_survey/,text/csv,,,terms_by,false,false
+nis-umfrage,d821c626-8af0-458b-b44f-dbb509b93fbf,dp-nis_survey – GraphQL API,JSON,https://api.data-platform.cloud.bafu.admin.ch/api,application/json,,,terms_by,false,false
 nawa-trend-nationale-beobachtung-oberflachengewasserqualitat-messdaten,712108ed-b46b-42f6-97ae-8f53704ff114,dp-nawa-trend – Daten-Download,CSV,https://api.data-platform.cloud.bafu.admin.ch/download/water/nawa-trend/,text/csv,,,terms_by,false,false
 nawa-trend-nationale-beobachtung-oberflachengewasserqualitat-messdaten,843cf434-15b5-4214-9df4-9162dba36d7a,dp-nawa-trend – GraphQL API,JSON,https://api.data-platform.cloud.bafu.admin.ch/api,application/json,,,terms_by,false,false
 okoinventardatenbank-bafu-20xy,5dda0351-c6f7-4b1e-b877-07aefc7f8bc6,dp-lca – Daten-Download,CSV,https://api.data-platform.cloud.bafu.admin.ch/download/dp-lca/,text/csv,,,terms_by,false,false
